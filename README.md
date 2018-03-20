@@ -7,25 +7,22 @@ Athens2048
 
 ## Table of contents
 
-* [Rules and logic](/Rulesnlogic.md/)
-  * [Rules](/Rulesnlogic.md/#Rules)
-  * Movement
-  * Merging
-  * Spawning
-* [Design pattern implementation](#DP)
-  * Singleton
-  * Strategy
+* [Rules and logic](../Doc/Rulesnlogic.md/)
+  * [Rules](../Doc/Rulesnlogic.md/#Rules)
+  * [Movement](../Doc/Rulesnlogic.md/#Movement)
+  * [Merging](../Doc/Rulesnlogic.md/#Merging)
+  * [Spawning](../Doc/Rulesnlogic.md/#Spawning)
+* [Design pattern implementation](../Doc/DPimpl.md/#DP)
+  * [Singleton](../Doc/DPimpl.md/#Singleton)
+  * [Strategy](../Doc/DPimpl.md/#Strategy)
 
 ***
 
 
-## Prerequisites
-
-Built using IntelliJ IDE.
-
 ## Built With
 
-* [IntelliJ](https://www.jetbrains.com/idea/)
+* [IntelliJ](https://www.jetbrains.com/idea/) - IDE
+
 * [Swing](https://docs.oracle.com/javase/7/docs/api/javax/swing/package-summary.html) - GUI library
 * [Maven](https://maven.apache.org/) - Dependency Management
 * [JUnit](https://junit.org/) - Used for unitary tests
