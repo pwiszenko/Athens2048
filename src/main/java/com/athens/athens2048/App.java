@@ -12,7 +12,6 @@ public class App {
             ex.printStackTrace();
         }
 
-
         SwingUtilities.invokeLater(AppFrame::new);
     }
 }
