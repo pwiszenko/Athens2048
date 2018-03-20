@@ -33,16 +33,16 @@ class AppFrame extends JFrame {
             @Override
             public void keyPressed(KeyEvent event) {
                 if (event.getKeyCode() == KeyEvent.VK_LEFT) {
-                    game.onKeyPressed(Direction.WEST);
+                    game.onKeyPressed(Direction.LEFT);
                 }
                 if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    game.onKeyPressed(Direction.EAST);
+                    game.onKeyPressed(Direction.RIGHT);
                 }
                 if (event.getKeyCode() == KeyEvent.VK_UP) {
-                    game.onKeyPressed(Direction.NORTH);
+                    game.onKeyPressed(Direction.TOP);
                 }
                 if (event.getKeyCode() == KeyEvent.VK_DOWN) {
-                    game.onKeyPressed(Direction.SOUTH);
+                    game.onKeyPressed(Direction.BOTTOM);
                 }
             }
 

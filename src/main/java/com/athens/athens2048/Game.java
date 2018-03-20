@@ -4,21 +4,19 @@ package com.athens.athens2048;
 import java.util.ArrayList;
 
 public class Game {
-    /**
-     * Game controller - it should contain the 'game logic', i.e. turns, processing input events, etc.
-     */
 
     private final int HEIGHT = 4;
     private final int WIDTH = 4;
+
     private Tile tiles[][];
     private AppFrame frame;
 
     Game(AppFrame frame) {
         this.frame = frame;
         tiles = new Tile[HEIGHT][WIDTH];
-        for(int i=0; i<HEIGHT; i++)
+        for(int i = 0; i < HEIGHT; i++)
         {
-            for(int j=0; j<WIDTH; j++)
+            for(int j = 0; j < WIDTH; j++)
                 tiles[i][j] = new Tile(0);
         }
 
@@ -33,88 +31,117 @@ public class Game {
         updateBoard();
     }
 
-    void onKeyPressed(Direction direction) {
-        switch (direction) {
-            case NORTH:
-                // do something with the board
-                break;
-
-            case EAST:
-                break;
-
-            case SOUTH:
-                break;
-
-            case WEST:
-                leftMerge();
-                updateBoard();
-                break;
-        }
-    }
-
     private void updateBoard() {
         for (int i = 0; i < HEIGHT; i++)
             for (int j = 0; j < WIDTH; j++)
                 frame.updateTile(i, j, tiles[i][j].getNumber());
     }
 
-    private void _leftSlideRow(int row)
+    void onKeyPressed(Direction direction) {
+        merge(direction);
+        updateBoard();
+    }
+
+    private void merge(Direction direction)
+    {
+        int start = 0, end = 0, maxPosition = 0;
+        switch (direction) {
+            case LEFT:
+                start = 0;
+                end = WIDTH - 1;
+                maxPosition = WIDTH;
+                break;
+            case RIGHT:
+                start = WIDTH - 1;
+                end = 0;
+                maxPosition = WIDTH;
+                break;
+            case TOP:
+                start = 0;
+                end = HEIGHT - 1;
+                maxPosition = HEIGHT;
+                break;
+            case BOTTOM:
+                start = HEIGHT - 1;
+                end = 0;
+                maxPosition = HEIGHT;
+                break;
+        }
+
+        for(int position = 0; position < maxPosition; position++)
+            update(direction, position, start, end);
+    }
+
+    private void update(Direction direction, int position, int startIndex, int endIndex)
+    {
+        slide(direction, position, startIndex, endIndex);
+
+        int diff = startIndex < endIndex ? 1 : -1;
+
+        for(int i = startIndex; i * diff <= (endIndex - diff) * diff; i += diff)
+        {
+            Tile currTile = Direction.isHorizontal(direction) ? tiles[position][i] : tiles[i][position];
+            Tile nextTile = Direction.isHorizontal(direction) ? tiles[position][i + diff] : tiles[i + diff][position];
+
+            if(currTile.getNumber() == nextTile.getNumber() && currTile.getNumber() != 0)
+            {
+                // merge
+                currTile.setNumber(2 * currTile.getNumber());
+
+                // brings every tile to the left
+                int j = i + diff;
+                while(j * diff <= (endIndex - diff) * diff)
+                {
+                    if (Direction.isHorizontal(direction)) {
+                        tiles[position][j].setNumber(tiles[position][j + diff].getNumber());
+                    } else {
+                        tiles[j][position].setNumber(tiles[j + diff][position].getNumber());
+                    }
+
+                    j += diff;
+                }
+
+                // makes the last tile = 0
+                if (Direction.isHorizontal(direction)) {
+                    tiles[position][j].setNumber(0);
+                } else {
+                    tiles[j][position].setNumber(0);
+                }
+            }
+        }
+    }
+
+    private void slide(Direction direction, int position, int startIndex, int endIndex)
     {
         ArrayList<Tile> aux_tiles = new ArrayList<>();
 
-        // sets all zeros to the right in aux_row
-        for(int i=0; i<WIDTH; i++)
+        int diff = startIndex < endIndex ? 1 : -1;
+
+        // create a temporary arraylist with occupied tiles
+        for(int i = startIndex; i * diff <= endIndex * diff; i += diff)
         {
-            if(tiles[row][i].getNumber() >= 2)
+            int x = Direction.isHorizontal(direction) ? position : i;
+            int y = Direction.isHorizontal(direction) ? i : position;
+
+            if(tiles[x][y].getNumber() >= 2)
             {
-                aux_tiles.add(tiles[row][i]);
+                aux_tiles.add(tiles[x][y]);
             }
         }
 
         int aux_index = 0;
-        //copy aux_row to tiles
-        for(int i=0; i<WIDTH; i++)
+        // copy tiles from a temporary to original array skipping unoccupied tiles
+        for(int i = startIndex; i * diff <= endIndex * diff; i += diff)
         {
+            int x = Direction.isHorizontal(direction) ? position : i;
+            int y = Direction.isHorizontal(direction) ? i : position;
+
             if (aux_index < aux_tiles.size()) {
-                tiles[row][i].setNumber(aux_tiles.get(aux_index).getNumber());
+                tiles[x][y].setNumber(aux_tiles.get(aux_index).getNumber());
                 aux_index++;
             }
             else
-                tiles[row][i].setNumber(0);
+                tiles[x][y].setNumber(0);
         }
-    }
-
-    private void _leftUpdateRow(int row)
-    {
-        _leftSlideRow(row);
-
-        // checks if there can be a merge
-        if(tiles[row][0].getNumber() == 0 || tiles[row][1].getNumber() == 0)
-            return;
-
-        for(int i=0; i<WIDTH-1; i++)
-        {
-            if(tiles[row][i].getNumber() == tiles[row][i+1].getNumber())
-            {	// merge
-                tiles[row][i].setNumber(2 * tiles[row][i].getNumber());
-
-                // brings every tile to the left
-                int j=i+1;
-                while(j<WIDTH-1)
-                {
-                    tiles[row][j].setNumber(tiles[row][j+1].getNumber());
-                    j++;
-                }
-
-                // makes the last tile = 0
-                tiles[row][j].setNumber(0);
-            }
-        }
-    }
-
-    public void leftMerge()
-    {
-        for(int row=0; row<HEIGHT; row++)
-            _leftUpdateRow(row);
     }
 }
