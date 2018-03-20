@@ -6,6 +6,45 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 class AppFrame extends JFrame {
+
+    /**
+     * Variables of type {@link JPanel} that represent the different game titles.
+     */
+    private JPanel gamePanel = new JPanel();
+    private JPanel scorePanel = new JPanel();
+    private JPanel bestScorePanel = new JPanel();
+
+    /**
+     * Variables of type {@link JLabel} that represent the player scores.
+     */
+    private JLabel score_text = new JLabel("Score:");
+    private JLabel max_text = new JLabel("Best:");
+    private JLabel current_score = new JLabel("0");
+    private JLabel max_score = new JLabel("0");
+    private int total_score = 0;
+
+    /**
+     * Theme variables of the game board - default: Day theme
+     */
+    private final int NIGHT = 1;
+    private final int DAY = 0;
+    private int currentTheme = DAY;
+    AppFrameTheme theme = new DayTheme();
+    JLabel themeText = new JLabel("Change theme with T key", SwingConstants.CENTER);
+
+    // Bord size (default: 4 - 4x4)
+    private int max_tiles = 4;
+
+    // X and Y where the titles start to be drawn
+    private int leftBorder = 40;
+    private int topBorder = 40;
+    private int gameTitleBorder = 10;
+
+    /**
+     * Variable of type {@link JButton} that represents an array of game titles.
+     */
+    private JButton[][] gameTile = new JButton[max_tiles][max_tiles];
+
     AppFrame() {
 
         // Set JFrame properties for the game board
@@ -17,11 +56,8 @@ class AppFrame extends JFrame {
         this.requestFocusInWindow();
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-
         // Generates the game panels
-
         buildGameBoard();
-
         Game game = new Game(this);
 
         // Add key listeners for Up/North/East/West keys
@@ -44,6 +80,9 @@ class AppFrame extends JFrame {
                 if (event.getKeyCode() == KeyEvent.VK_DOWN) {
                     game.onKeyPressed(Direction.BOTTOM);
                 }
+                if (event.getKeyCode() == KeyEvent.VK_T) {
+                    changeTheme();
+                }
             }
 
             @Override
@@ -53,37 +92,10 @@ class AppFrame extends JFrame {
     }
 
     /**
-     * Variables of type {@link JPanel} that represent the different game titles.
-     */
-    private JPanel gamePanel = new JPanel();
-    private JPanel scorePanel = new JPanel();
-    private JPanel bestScorePanel = new JPanel();
-
-    /**
-     * Variables of type {@link JLabel} that represent the player scores.
-     */
-    private JLabel score_text = new JLabel("Score:");
-    private JLabel max_text = new JLabel("Best:");
-    private JLabel current_score = new JLabel("0");
-    private JLabel max_score = new JLabel("0");
-
-    // Bord size (default: 4 - 4x4)
-    private int max_tiles = 4;
-
-    // X and Y where the titles start to be drawn
-    private int leftBorder = 40;
-    private int topBorder = 40;
-    private int gameTitleBorder = 10;
-
-    /**
-     * Variable of type {@link JButton} that represents an array of game titles.
-     */
-    private JButton[][] gameTile = new JButton[max_tiles][max_tiles];
-
-    /**
      * Creates the game titles and the other elements in the {@link JFrame}
      */
     private void buildGameBoard() {
+
 
         // Setup the game title JPanel background and dimensions
         GridLayout customGridLayout = new GridLayout(max_tiles, max_tiles);
@@ -105,6 +117,7 @@ class AppFrame extends JFrame {
                 gameTile[x][y].setPreferredSize(new Dimension((int) 100, (int) 100));
                 gameTile[x][y].setEnabled(false);
                 gameTile[x][y].setBorderPainted(false);
+                gameTile[x][y].setOpaque(true);
                 gamePanel.add(gameTile[x][y]);
             }
         }
@@ -153,14 +166,61 @@ class AppFrame extends JFrame {
         max_score.setFont(new Font("Arial", Font.BOLD, 15));
         max_score.setForeground(Color.DARK_GRAY);
 
+        // Add the change theme text
+        this.add(themeText);
 
+        // Setup the change theme text
+        themeText.setFont(new Font("Arial", Font.PLAIN, 15));
+        themeText.setBounds(leftBorder + gameTitleBorder + max_tiles*100 + max_tiles*15 + 40, 350, 180, 50);
+
+        // Setup the theme
+        setTheme(NIGHT);
+        themeText.setText("Change theme with T key");
     }
 
     /**
      * Updates the color and text of a title given an x and y (with x and y starting on 1 from the top left)
      */
-    public void updateTile(int x, int y, int value){
+    private void changeTheme(){
+        switch (currentTheme) {
+            case NIGHT:
+                // If it's night, change to day theme
+                setTheme(DAY);
+                break;
+            case DAY:
+                // If it's day, change to night theme
+                setTheme(NIGHT);
+                break;
+        }
+    }
 
+    /**
+     * Set the theme
+     */
+    private void setTheme(int themeId){
+        switch (themeId) {
+            case NIGHT:
+                currentTheme = NIGHT;
+                theme = new NightTheme();
+                theme.setPanelsBackground(this);
+                theme.setThemeLabel(themeText);
+                themeText.setText("Night theme");
+                break;
+            case DAY:
+                currentTheme = DAY;
+                theme = new DayTheme();
+                theme.setPanelsBackground(this);
+                theme.setThemeLabel(themeText);
+                themeText.setText("Day theme");
+                break;
+        }
+        updateThemeBoard();
+    }
+
+    /**
+     * Updates the text of a tile given an x and y (with x and y starting on 1 from the top left)
+     */
+    public void updateTile(int x, int y, int value) {
         // Update text of the tile according to the value
         if (value < 2) {
             gameTile[x][y].setText("");
@@ -168,46 +228,17 @@ class AppFrame extends JFrame {
             gameTile[x][y].setText(Integer.toString(value));
         }
 
+        // Update color of the tile according to its value
+        updateTileColor(x, y, value);
+    }
+
+    /**
+     * Updates the color of a tie given an x and y (with x and y starting on 1 from the top left)
+     */
+    private void updateTileColor(int x, int y, int value){
+
         // Update the background color according to the value of the title
-        gameTile[x][y].setOpaque(true);
-        switch (value){
-            case 2:
-                gameTile[x][y].setBackground(new Color(238,228,218));
-                break;
-            case 4:
-                gameTile[x][y].setBackground(new Color(237,218,224));
-                break;
-            case 8:
-                gameTile[x][y].setBackground(new Color(242,177,121));
-                break;
-            case 16:
-                gameTile[x][y].setBackground(new Color(245,149,99));
-                break;
-            case 32:
-                gameTile[x][y].setBackground(new Color(246,124,95));
-                break;
-            case 64:
-                gameTile[x][y].setBackground(new Color(246,94,59));
-                break;
-            case 128:
-                gameTile[x][y].setBackground(new Color(237,207,114));
-                break;
-            case 254:
-                gameTile[x][y].setBackground(new Color(237,204,97));
-                break;
-            case 512:
-                gameTile[x][y].setBackground(new Color(237,200,80));
-                break;
-            case 1024:
-                gameTile[x][y].setBackground(new Color(237,197,63));
-                break;
-            case 2048:
-                gameTile[x][y].setBackground(new Color(237,194,46));
-                break;
-            default:
-                // Empty title
-                gameTile[x][y].setBackground(Color.GRAY);
-        }
+        theme.setTileColor(gameTile[x][y], value);
 
         // Change font size according to the number of digits needed to be displayed
         if (value > 512) {
@@ -219,4 +250,24 @@ class AppFrame extends JFrame {
         }
     }
 
+    /**
+     * Repaints the whole board
+     */
+    private void updateThemeBoard(){
+        for(int x = 0; x < max_tiles; x++) {
+            for(int y = 0; y < max_tiles; y++) {
+                if(!gameTile[x][y].getText().equals("")){
+                    updateTileColor(x, y, Integer.parseInt(gameTile[x][y].getText()));
+                }
+            }
+        }
+    }
+
+    /**
+     * Changes the JLabel of the current score
+     */
+    public void increaseScoreText(int increment) {
+        total_score += increment;
+        current_score.setText(Integer.toString(total_score));
+    }
 }
