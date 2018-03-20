@@ -7,14 +7,14 @@ Athens2048
 
 ## Table of contents
 
-* [Rules and logic](../master/Rulesnlogic.md/)
-  * [Rules](../master/Rulesnlogic.md/#Rules)
-  * [Movement](../master/Rulesnlogic.md/#Movement)
-  * [Merging](../master/Rulesnlogic.md/#Merging)
-  * [Spawning](../master/Rulesnlogic.md/#Spawning)
-* [Design pattern implementation](../master/DPimpl.md/#DP)
-  * [Singleton](../master/DPimpl.md/#Singleton)
-  * [Strategy](../master/DPimpl.md/#Strategy)
+* [Rules and logic](./Rulesnlogic.md/)
+  * [Rules](./Rulesnlogic.md/#Rules)
+  * [Movement](./Rulesnlogic.md/#Movement)
+  * [Merging](./Rulesnlogic.md/#Merging)
+  * [Spawning](./Rulesnlogic.md/#Spawning)
+* [Design pattern implementation](./DPimpl.md/#DP)
+  * [Singleton](./DPimpl.md/#Singleton)
+  * [Strategy](./DPimpl.md/#Strategy)
 
 ***
 
