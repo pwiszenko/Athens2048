@@ -16,7 +16,8 @@ Singleton pattern was used in `RandomPicker` class.
 ## Strategy
 
 Strategy pattern was used for GUI design: the player can choose two colour themes. Applying strategy pattern allows adding extra  themes on the go, for example for holidays, by writing a relatively small amount of code.
-```
+```java
+new public int main();
 example of code with Christmas trees
 ```
 
