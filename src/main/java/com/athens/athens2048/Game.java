@@ -1,8 +1,6 @@
 package com.athens.athens2048;
 
 
-import java.util.ArrayList;
-
 public class Game {
 
     private final int HEIGHT = 4;
@@ -37,6 +35,7 @@ public class Game {
         for (int i = 0; i < HEIGHT; i++)
             for (int j = 0; j < WIDTH; j++)
                 frame.updateTile(i, j, tiles[i][j].getNumber());
+        frame.repaint();
     }
 
     void onKeyPressed(Direction direction) {
@@ -86,7 +85,7 @@ public class Game {
         }
 
         boolean merged = false;
-        for(int position = 0; position < maxPosition; position++) {
+        for (int position = 0; position < maxPosition; position++) {
             if (update(direction, position, start, end))
                 merged = true;
         }
@@ -109,8 +108,9 @@ public class Game {
 
             if (currTile.getNumber() == nextTile.getNumber() && currTile.getNumber() != 0)
             {
-                merged = true;
                 // merge
+                merged = true;
+                frame.increaseScore(2 * currTile.getNumber());
                 currTile.setNumber(2 * currTile.getNumber());
 
                 // brings every tile to the left
@@ -140,61 +140,30 @@ public class Game {
     private boolean slide(Direction direction, int position, int startIndex, int endIndex)
     {
         boolean shifted = false;
-//        int diff = startIndex < endIndex ? 1 : -1;
-//
-//        for(int i = startIndex + diff; i * diff <= endIndex * diff; i += diff) {
-//            Tile currTile = Direction.isHorizontal(direction) ? tiles[position][i] : tiles[i][position];
-//            Tile prevTile = Direction.isHorizontal(direction) ? tiles[position][i - diff] : tiles[i - diff][position];
-//
-//            int currIndex = i;
-//            if(currTile.getNumber() == 0)
-//                continue;
-//            while (prevTile.getNumber() == 0) {
-//                shifted = true;
-//                prevTile.setNumber(currTile.getNumber());
-//                currTile.setNumber(0);
-//                currIndex -= diff;
-//                if (currIndex != startIndex) {
-//                    currTile = prevTile;
-//                    prevTile = Direction.isHorizontal(direction)
-//                            ? tiles[position][currIndex - diff] : tiles[currIndex - diff][position];
-//                }
-//                else
-//                    break;
-//            }
-//        }
-
-
-        ArrayList<Tile> auxArray = new ArrayList<>();
-
         int diff = startIndex < endIndex ? 1 : -1;
 
-        // create a temporary arraylist with occupied tiles
-        for (int i = startIndex; i * diff <= endIndex * diff; i += diff)
-        {
-            int x = Direction.isHorizontal(direction) ? position : i;
-            int y = Direction.isHorizontal(direction) ? i : position;
+        for (int i = startIndex + diff; i * diff <= endIndex * diff; i += diff) {
+            Tile currTile = Direction.isHorizontal(direction) ? tiles[position][i] : tiles[i][position];
+            Tile prevTile = Direction.isHorizontal(direction) ? tiles[position][i - diff] : tiles[i - diff][position];
 
-            if (tiles[x][y].getNumber() >= 2)
-                auxArray.add(tiles[x][y]);
-        }
-
-        int auxIndex = 0;
-        // copy tiles from a temporary to original array skipping unoccupied tiles
-        for (int i = startIndex; i * diff <= endIndex * diff; i += diff)
-        {
-            int x = Direction.isHorizontal(direction) ? position : i;
-            int y = Direction.isHorizontal(direction) ? i : position;
-
-            if (auxIndex < auxArray.size()) {
-                tiles[x][y].setNumber(auxArray.get(auxIndex).getNumber());
-                auxIndex++;
+            int currIndex = i;
+            if (currTile.getNumber() == 0)
+                continue;
+            while (prevTile.getNumber() == 0) {
+                shifted = true;
+                prevTile.setNumber(currTile.getNumber());
+                currTile.setNumber(0);
+                currIndex -= diff;
+                if (currIndex != startIndex) {
+                    currTile = prevTile;
+                    prevTile = Direction.isHorizontal(direction)
+                            ? tiles[position][currIndex - diff] : tiles[currIndex - diff][position];
+                }
+                else
+                    break;
             }
-            else
-                tiles[x][y].setNumber(0);
-
-            shifted = true;
         }
+
         return shifted;
     }
 }

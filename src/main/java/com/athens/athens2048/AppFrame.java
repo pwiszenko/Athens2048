@@ -29,8 +29,8 @@ class AppFrame extends JFrame {
     private final int NIGHT = 1;
     private final int DAY = 0;
     private int currentTheme = DAY;
-    AppFrameTheme theme = new DayTheme();
-    JLabel themeText = new JLabel("Change theme with T key", SwingConstants.CENTER);
+    private AppFrameTheme theme = new DayTheme();
+    private JLabel themeText = new JLabel("Change theme with T key", SwingConstants.CENTER);
 
     // Bord size (default: 4 - 4x4)
     private int max_tiles = 4;
@@ -114,7 +114,7 @@ class AppFrame extends JFrame {
             for (int y = 0; y < max_tiles; y++) {
                 gameTile[x][y] = new JButton("");
                 updateTile(x,y,0);
-                gameTile[x][y].setPreferredSize(new Dimension((int) 100, (int) 100));
+                gameTile[x][y].setPreferredSize(new Dimension(100, 100));
                 gameTile[x][y].setEnabled(false);
                 gameTile[x][y].setBorderPainted(false);
                 gameTile[x][y].setOpaque(true);
@@ -266,7 +266,7 @@ class AppFrame extends JFrame {
     /**
      * Changes the JLabel of the current score
      */
-    public void increaseScoreText(int increment) {
+    public void increaseScore(int increment) {
         total_score += increment;
         current_score.setText(Integer.toString(total_score));
     }

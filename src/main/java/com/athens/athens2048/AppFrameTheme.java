@@ -8,11 +8,11 @@ import javax.swing.*;
 
 public interface AppFrameTheme {
     // Sets the colors of the theme (background and font)
-    public void setTileColor(JButton tile, int value);
+    void setTileColor(JButton tile, int value);
 
     // Sets the colors of the theme (background and font)
-    public void setThemeLabel(JLabel button);
+    void setThemeLabel(JLabel button);
 
     // Sets the background of the game panels
-    public void setPanelsBackground(JFrame frame);
+    void setPanelsBackground(JFrame frame);
 }

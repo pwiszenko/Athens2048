@@ -28,7 +28,7 @@ public class NightTheme implements AppFrameTheme {
             case 128:
                 tile.setBackground(new Color(255,105,0));
                 break;
-            case 254:
+            case 256:
                 tile.setBackground(new Color(196,214,0));
                 break;
             case 512:
