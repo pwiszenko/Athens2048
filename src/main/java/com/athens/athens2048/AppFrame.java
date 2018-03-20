@@ -7,7 +7,6 @@ import java.awt.event.KeyListener;
 
 class AppFrame extends JFrame {
     AppFrame() {
-        Game game = new Game();
 
         // Set JFrame properties for the game board
         this.setTitle("2048 by ATHENS March 2018");
@@ -16,7 +15,14 @@ class AppFrame extends JFrame {
         this.setVisible(true);
         this.setFocusable(true);
         this.requestFocusInWindow();
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+
+        // Generates the game panels
+
+        buildGameBoard();
+
+        Game game = new Game(this);
 
         // Add key listeners for Up/North/East/West keys
         this.addKeyListener(new KeyListener() {
@@ -44,9 +50,6 @@ class AppFrame extends JFrame {
             public void keyReleased(KeyEvent e) {
             }
         });
-
-        // Generates the game panels
-        buildGameBoard();
     }
 
     /**
