@@ -11,4 +11,13 @@ In a game where for example we have a spaceship on which we can upgrade it's wea
 
 ## Singleton
 
+Singleton pattern was used in `RandomPicker` class.
+
 ## Strategy
+
+Strategy pattern was used for GUI design: the player can choose two colour themes. Applying strategy pattern allows adding extra  themes on the go, for example for holidays, by writing a relatively small amount of code.
+```
+example of code with Christmas trees
+```
+
+The new theme changes only defined parts of the UI, keeping already programmed features.
