@@ -111,7 +111,7 @@ class AppFrame extends JFrame {
         // Add game titles JPanel to main JFrame
         this.add(gamePanel);
 
-        // Add the score titles to the JFrame
+        // Add the score tile to the JFrame
         this.add(scorePanel);
         scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
         scorePanel.add(Box.createVerticalGlue());
@@ -120,7 +120,7 @@ class AppFrame extends JFrame {
         scorePanel.add(current_score);
         scorePanel.add(Box.createVerticalGlue());
 
-        // Setup the scores titles in the JFrame
+        // Setup the score tile in the JFrame
         scorePanel.setBackground(Color.LIGHT_GRAY);
         scorePanel.setBounds(leftBorder + gameTitleBorder + max_tiles*100 + max_tiles*15 + 80, 150, 100, 60);
 
@@ -131,6 +131,29 @@ class AppFrame extends JFrame {
         current_score.setAlignmentX(CENTER_ALIGNMENT);
         current_score.setFont(new Font("Arial", Font.BOLD, 15));
         current_score.setForeground(Color.DARK_GRAY);
+
+        // Add the best score tile to the JFrame
+        this.add(bestScorePanel);
+        bestScorePanel.setLayout(new BoxLayout(bestScorePanel, BoxLayout.Y_AXIS));
+        bestScorePanel.add(Box.createVerticalGlue());
+        bestScorePanel.add(max_text);
+        bestScorePanel.add(Box.createVerticalGlue());
+        bestScorePanel.add(max_score);
+        bestScorePanel.add(Box.createVerticalGlue());
+
+        // Setup the best score tile in the JFrame
+        bestScorePanel.setBackground(Color.LIGHT_GRAY);
+        bestScorePanel.setBounds(leftBorder + gameTitleBorder + max_tiles*100 + max_tiles*15 + 80, 230, 100, 60);
+
+        max_text.setAlignmentX(CENTER_ALIGNMENT);
+        max_text.setFont(new Font("Arial", Font.BOLD, 20));
+        max_text.setForeground(Color.DARK_GRAY);
+
+        max_score.setAlignmentX(CENTER_ALIGNMENT);
+        max_score.setFont(new Font("Arial", Font.BOLD, 15));
+        max_score.setForeground(Color.DARK_GRAY);
+
+
     }
 
     /**
