@@ -1,6 +1,6 @@
 # Design pattern implementation <a id="DP"></a>
 
-We chose Singleton and Strategy patterns. We didn't use decoration pattern, because it would have no use for our game. Some of the possible new featires of 2048 could be:
+We chose Singleton and Strategy patterns. We didn't use decoration pattern, because it would have no use for our game. Some of the possible new features of 2048 could be:
 - possibility to change grid's size
 - possibility to play after achieving '2048' tile
 
