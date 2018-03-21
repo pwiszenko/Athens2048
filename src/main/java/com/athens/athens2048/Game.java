@@ -9,13 +9,17 @@ public class Game {
     private final int HEIGHT = 4;
     private final int WIDTH = 4;
 
+
     private boolean gameOver = false;
     private List<GameOverListener> gameOverListeners;
 
     private Tile tiles[][];
     private AppFrame frame;
+    Command[] moveCommands;
 
     Game(AppFrame frame) {
+
+
         this.frame = frame;
         this.gameOverListeners = new ArrayList<>();
 
@@ -34,8 +38,28 @@ public class Game {
         tiles[1][1] = new Tile(0);
         tiles[1][2] = new Tile(2);
         tiles[1][3] = new Tile(2);
+
+
+        // Initialize commands
+        moveCommands = new Command[Direction.directionCount];
+        Command noCommand = new NoCommand(tiles, this);
+        for (int i = 0; i < Direction.directionCount; i++) {
+            moveCommands[i] = noCommand;
+        }
+        UpCommand upCommand = new UpCommand(tiles, this);
+        DownCommand downCommand = new DownCommand(tiles, this);
+        RightCommand rightCommand = new RightCommand(tiles, this);
+        LeftCommand leftCommand = new LeftCommand(tiles, this);
+
+        setCommand(Direction.TOP.getValue(), upCommand);
+        setCommand(Direction.RIGHT.getValue(), rightCommand);
+        setCommand(Direction.BOTTOM.getValue(), downCommand);
+        setCommand(Direction.LEFT.getValue(), leftCommand);
+
+
         updateBoard();
     }
+
 
     public void addGameOverListener(GameOverListener gameOverListener) {
         this.gameOverListeners.add(gameOverListener);
@@ -48,6 +72,15 @@ public class Game {
     private void notifyGameOverListeners() {
         for (GameOverListener listener : gameOverListeners)
             listener.gameOver();
+    }
+
+    public void setCommand(int slot, Command moveCommand) {
+        moveCommands[slot] = moveCommand;
+    }
+
+    public boolean onMove(Direction direction) {
+        return moveCommands[direction.getValue()].execute();
+
     }
 
     private void updateBoard() {
@@ -103,40 +136,17 @@ public class Game {
 
     private boolean merge(Direction direction)
     {
-        int start = 0, end = 0, maxPosition = 0;
-        switch (direction) {
-            case LEFT:
-                start = 0;
-                end = WIDTH - 1;
-                maxPosition = WIDTH;
-                break;
-            case RIGHT:
-                start = WIDTH - 1;
-                end = 0;
-                maxPosition = WIDTH;
-                break;
-            case TOP:
-                start = 0;
-                end = HEIGHT - 1;
-                maxPosition = HEIGHT;
-                break;
-            case BOTTOM:
-                start = HEIGHT - 1;
-                end = 0;
-                maxPosition = HEIGHT;
-                break;
-        }
+
 
         boolean merged = false;
-        for (int position = 0; position < maxPosition; position++) {
-            if (update(direction, position, start, end))
-                merged = true;
-        }
+
+        // USE COMMAND PATTERN
+        merged = onMove(direction);
 
         return merged;
     }
 
-    private boolean update(Direction direction, int position, int startIndex, int endIndex)
+    public boolean update(Direction direction, int position, int startIndex, int endIndex)
     {
         boolean merged = false;
         if (slide(direction, position, startIndex, endIndex))
