@@ -98,7 +98,7 @@ public class Game {
             checkGameOver();
             return;
         }
-        System.out.println("Going to replay " + turnIndex+1 + " turn on " + turns.size());
+        System.out.println("Going to replay " + (turnIndex+1) + " turn on " + turns.size());
         Turn turn  = turns.get(turnIndex);
         turn.command.execute();
         tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
