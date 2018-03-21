@@ -14,7 +14,4 @@ public class NoCommand extends GameCommand implements Command {
         return false;
     }
 
-    public void undo(){
-
-    }
 }
