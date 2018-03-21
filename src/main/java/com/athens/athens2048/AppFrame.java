@@ -22,6 +22,7 @@ class AppFrame extends JFrame {
     private JLabel current_score = new JLabel("0");
     private JLabel max_score = new JLabel("0");
     private int total_score = 0;
+    private int best_score = 0;
 
     /**
      * Theme variables of the game board - default: Day theme
@@ -270,4 +271,13 @@ class AppFrame extends JFrame {
         total_score += increment;
         current_score.setText(Integer.toString(total_score));
     }
+
+    /**
+     * Changes the JLabel of the best score
+     */
+    public void setBestScore(int score) {
+        best_score = score;
+        max_score.setText(Integer.toString(score));
+    }
+
 }
