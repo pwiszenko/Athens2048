@@ -96,9 +96,6 @@ class AppFrame extends JFrame implements GameOverListener {
                 if (event.getKeyCode() == KeyEvent.VK_R) {
                     replayGame();
                 }
-                if (event.getKeyCode() == KeyEvent.VK_R) {
-                    replayGame();
-                }
                 if (event.getKeyCode() == KeyEvent.VK_E) {
                     game.replay();
                 }
