@@ -34,7 +34,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.athens.athens2048.App</mainClass>
+                            <mainClass>com.athens.athens2048.core.App</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

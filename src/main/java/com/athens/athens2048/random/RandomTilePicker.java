@@ -1,4 +1,6 @@
-package com.athens.athens2048;
+package com.athens.athens2048.random;
+import com.athens.athens2048.core.Tile;
+
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -24,7 +26,7 @@ public class RandomTilePicker{
     }
 
 
-    public DuoTuple<Integer,Integer> update(Tile [][]tiles) {
+    public DuoTuple<Integer,Integer> update(Tile[][]tiles) {
         int height = tiles.length;
         int width = tiles[0].length;
 

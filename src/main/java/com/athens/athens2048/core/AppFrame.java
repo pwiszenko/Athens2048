@@ -1,4 +1,8 @@
-package com.athens.athens2048;
+package com.athens.athens2048.core;
+
+import com.athens.athens2048.gui.AppFrameTheme;
+import com.athens.athens2048.gui.DayTheme;
+import com.athens.athens2048.gui.NightTheme;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package com.athens.athens2048;
+package com.athens.athens2048.core;
 
 
 public enum Direction {

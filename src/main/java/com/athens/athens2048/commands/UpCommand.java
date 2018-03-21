@@ -1,10 +1,13 @@
-package com.athens.athens2048;
+package com.athens.athens2048.commands;
 
-import static com.athens.athens2048.Direction.TOP;
+import com.athens.athens2048.core.Game;
+import com.athens.athens2048.core.Tile;
 
-public class UpCommand extends GameCommand implements Command{
+import static com.athens.athens2048.core.Direction.TOP;
 
-    public UpCommand(Tile [][] tiles, Game game){
+public class UpCommand extends GameCommand implements Command {
+
+    public UpCommand(Tile[][] tiles, Game game){
         initialize(tiles, game);
     }
 

@@ -1,5 +1,9 @@
-package com.athens.athens2048;
+package com.athens.athens2048.core;
 
+
+import com.athens.athens2048.commands.*;
+import com.athens.athens2048.random.DuoTuple;
+import com.athens.athens2048.random.RandomTilePicker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +34,14 @@ public class Game {
                 tiles[i][j] = new Tile(0);
         }
 
-        tiles[0][0] = new Tile(2);
-        tiles[0][1] = new Tile(2);
-        tiles[0][2] = new Tile(4);
-        tiles[0][3] = new Tile(4);
-        tiles[1][0] = new Tile(0);
-        tiles[1][1] = new Tile(0);
-        tiles[1][2] = new Tile(2);
-        tiles[1][3] = new Tile(2);
+        tiles[0][0].setNumber(2);
+        tiles[0][1].setNumber(2);
+        tiles[0][2].setNumber(4);
+        tiles[0][3].setNumber(4);
+        tiles[1][0].setNumber(0);
+        tiles[1][1].setNumber(0);
+        tiles[1][2].setNumber(2);
+        tiles[1][3].setNumber(2);
 
 
         // Initialize commands

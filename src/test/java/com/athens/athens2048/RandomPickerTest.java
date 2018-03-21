@@ -1,5 +1,8 @@
 package com.athens.athens2048;
 
+import com.athens.athens2048.core.Tile;
+import com.athens.athens2048.random.DuoTuple;
+import com.athens.athens2048.random.RandomTilePicker;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -31,7 +34,7 @@ public class RandomPickerTest extends TestCase
      */
     public void testRandomPicker()
     {
-        Tile [][]tiles = new Tile[HEIGHT][WIDTH];
+        Tile[][]tiles = new Tile[HEIGHT][WIDTH];
         tiles[0][0] = new Tile(2);
         tiles[0][1] = new Tile(2);
         tiles[0][2] = new Tile(4);

@@ -1,4 +1,4 @@
-package com.athens.athens2048;
+package com.athens.athens2048.core;
 
 
 public class Tile {
@@ -8,7 +8,7 @@ public class Tile {
 
     private int number;
 
-    Tile(int number) {
+    public Tile(int number) {
         this.number = number;
     }
 

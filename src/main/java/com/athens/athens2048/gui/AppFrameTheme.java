@@ -1,4 +1,4 @@
-package com.athens.athens2048;
+package com.athens.athens2048.gui;
 
 import javax.swing.*;
 

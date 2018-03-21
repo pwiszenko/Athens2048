@@ -1,9 +1,12 @@
-package com.athens.athens2048;
+package com.athens.athens2048.commands;
 
-import static com.athens.athens2048.Direction.LEFT;
+import com.athens.athens2048.core.Game;
+import com.athens.athens2048.core.Tile;
+
+import static com.athens.athens2048.core.Direction.LEFT;
 
 public class LeftCommand extends GameCommand implements Command {
-    public LeftCommand(Tile [][] tiles, Game game){
+    public LeftCommand(Tile[][] tiles, Game game){
         initialize(tiles, game);
     }
 
