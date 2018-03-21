@@ -1,18 +1,24 @@
 package com.athens.athens2048;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Game {
 
     private final int HEIGHT = 4;
     private final int WIDTH = 4;
 
     private boolean gameOver = false;
+    private List<GameOverListener> gameOverListeners;
 
     private Tile tiles[][];
     private AppFrame frame;
 
     Game(AppFrame frame) {
         this.frame = frame;
+        this.gameOverListeners = new ArrayList<>();
+
         tiles = new Tile[HEIGHT][WIDTH];
         for(int i = 0; i < HEIGHT; i++)
         {
@@ -31,6 +37,19 @@ public class Game {
         updateBoard();
     }
 
+    public void addGameOverListener(GameOverListener gameOverListener) {
+        this.gameOverListeners.add(gameOverListener);
+    }
+
+    public void removeGameOverListener(GameOverListener gameOverListener) {
+        this.gameOverListeners.remove(gameOverListener);
+    }
+
+    private void notifyGameOverListeners() {
+        for (GameOverListener listener : gameOverListeners)
+            listener.gameOver();
+    }
+
     private void updateBoard() {
         for (int i = 0; i < HEIGHT; i++)
             for (int j = 0; j < WIDTH; j++)
@@ -42,20 +61,44 @@ public class Game {
         if (gameOver)
             return;
 
-        boolean merged = merge(direction);
-        if (!merged)
+        if (!merge(direction))
             return;
 
         DuoTuple<Integer, Integer> randomPoint = RandomTilePicker.getInstance().update(tiles);
-        if (randomPoint == null) {
-            System.out.println("Game over");
-            gameOver = true;
-        } else {
+        if (randomPoint != null) {
             int randomNumber = RandomTilePicker.getInstance().pickRandomTileValue();
             tiles[randomPoint.x][randomPoint.y].setNumber(randomNumber);
         }
 
         updateBoard();
+        checkGameOver();
+    }
+
+    private void checkGameOver() {
+        Tile [][] newTiles = new Tile[tiles.length][];
+        for (int i = 0; i < tiles.length; i++) {
+            newTiles[i] = new Tile[tiles.length];
+            for (int j = 0; j < tiles.length; j++) {
+                newTiles[i][j] = new Tile(tiles[i][j].getNumber());
+            }
+        }
+
+        boolean movePossible = false;
+        for (Direction direction : Direction.values()) {
+            if (merge(direction)) {
+                movePossible = true;
+                break;
+            }
+        }
+
+        for (int i = 0; i < tiles.length; i++)
+            for (int j = 0; j < tiles.length; j++)
+                tiles[i][j].setNumber(newTiles[i][j].getNumber());
+
+        if (!movePossible) {
+            gameOver = true;
+            notifyGameOverListeners();
+        }
     }
 
     private boolean merge(Direction direction)

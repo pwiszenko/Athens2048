@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-class AppFrame extends JFrame {
+class AppFrame extends JFrame implements GameOverListener {
 
     /**
      * Variables of type {@link JPanel} that represent the different game titles.
@@ -32,6 +32,7 @@ class AppFrame extends JFrame {
     private int currentTheme = DAY;
     private AppFrameTheme theme = new DayTheme();
     private JLabel themeText = new JLabel("Change theme with T key", SwingConstants.CENTER);
+    private Game game;
 
     // Bord size (default: 4 - 4x4)
     private int max_tiles = 4;
@@ -59,7 +60,7 @@ class AppFrame extends JFrame {
 
         // Generates the game panels
         buildGameBoard();
-        Game game = new Game(this);
+        startNewGame();
 
         // Add key listeners for Up/North/East/West keys
         this.addKeyListener(new KeyListener() {
@@ -84,12 +85,22 @@ class AppFrame extends JFrame {
                 if (event.getKeyCode() == KeyEvent.VK_T) {
                     changeTheme();
                 }
+                if (event.getKeyCode() == KeyEvent.VK_N) {
+                    startNewGame();
+                }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
             }
         });
+    }
+
+    private void startNewGame() {
+        total_score = 0;
+        current_score.setText(Integer.toString(total_score));
+        game = new Game(this);
+        game.addGameOverListener(this);
     }
 
     /**
@@ -273,11 +284,10 @@ class AppFrame extends JFrame {
     }
 
     /**
-     * Changes the JLabel of the best score
+     * Displays game over text
      */
-    public void setBestScore(int score) {
-        best_score = score;
-        max_score.setText(Integer.toString(score));
+    public void gameOver() {
+        best_score = total_score > best_score ? total_score : best_score;
+        max_score.setText(Integer.toString(best_score));
     }
-
 }
