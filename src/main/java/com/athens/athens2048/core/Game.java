@@ -98,7 +98,9 @@ public class Game {
             checkGameOver();
             return;
         }
-        System.out.println("Going to replay " + (turnIndex+1) + " turn on " + turns.size());
+        //System.out.println("Replaying  " + (turnIndex)+"/"+ (turns.size())
+        // + ", filling " + turns.get(turnIndex).coordinates +" with "
+        // + turns.get(turnIndex).tileValue);
         Turn turn  = turns.get(turnIndex);
         turn.command.execute();
         tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
@@ -177,9 +179,23 @@ public class Game {
         frame.repaint();
     }
 
+    static void removeEnd(ArrayList<Turn> turns, int includedStart){
+        int size = turns.size();
+        for(int i = includedStart; i< size; i++){
+            turns.remove(turns.size()-1);
+            //System.out.println("size = "+turns.size());
+        }
+    }
     void onKeyPressed(Direction direction) {
         if (gameOver)
             return;
+
+        if(turnIndex > 0 && turnIndex < turns.size()){
+            //System.out.println("Removing from "+ turnIndex+" to "+ (turns.size()-1));
+            removeEnd(turns, turnIndex);
+            //System.out.println("New size = "+ turns.size());
+            turnIndex = 0;
+        }
 
         if (!merge(direction))
             return;
@@ -191,6 +207,7 @@ public class Game {
             int randomNumber = RandomTilePicker.getInstance().pickRandomTileValue();
             tiles[randomPoint.x][randomPoint.y].setNumber(randomNumber);
             registerTurn(direction, randomNumber, randomPoint);
+            System.out.println((turns.size()-1)+"/"+ (turns.size()) + " > Moving to "+ direction + " filling " + randomPoint +" with "+ randomNumber);
         }
 
         updateBoard();
