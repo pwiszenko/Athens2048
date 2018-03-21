@@ -6,28 +6,15 @@ public class DownCommand extends GameCommand implements Command {
     public DownCommand(Tile [][] tiles, Game game){
         initialize(tiles, game);
     }
-    /*
-    case BOTTOM:
-    start = HEIGHT - 1;
-    end = 0;
-    maxPosition = HEIGHT;
-    */
+
 
     public boolean execute(){
-
-        int start = tiles.length - 1;
-        int end = 0;
-        int maxPosition = tiles.length;
-
         boolean merged = false;
-        for (int position = 0; position < maxPosition; position++) {
-            if (game.update(BOTTOM, position, start, end))
+        for (int position = 0; position < tiles.length; position++) {
+            if (game.update(BOTTOM, position, tiles.length - 1, 0))
                 merged =  true;
         }
         return merged;
     }
 
-    public void undo(){
-
-    }
 }
