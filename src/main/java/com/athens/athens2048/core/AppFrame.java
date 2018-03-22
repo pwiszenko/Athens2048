@@ -99,6 +99,14 @@ class AppFrame extends JFrame implements GameOverListener {
                 if (event.getKeyCode() == KeyEvent.VK_E) {
                     game.replay();
                 }
+                if (event.getKeyCode() == KeyEvent.VK_U) {
+                    total_score = 0;
+                    game.undo();
+                }
+                if (event.getKeyCode() == KeyEvent.VK_Y) {
+                    total_score = 0;
+                    game.redo();
+                }
             }
 
             @Override

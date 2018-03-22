@@ -25,6 +25,8 @@ public class Game {
 
     // For the replay functionality
     private int turnIndex = 0;
+    private int doIndex = 0;
+    private boolean undoing = false;
 
     private void initPlayback(){
         if(turns == null)
@@ -92,10 +94,72 @@ public class Game {
         turnIndex = 0;
     }
 
+    public void undo(){
+        initTiles();
+        if(doIndex <= 0) {
+            if(undoing == true){
+                updateBoard();
+                return;
+            }
+            undoing = true;
+            doIndex = turns.size() - 1;
+        }
+        else{
+            if(undoing == false) {
+                undoing = true;
+                doIndex--;
+            }
+        }
+
+        for(int i = 0; i < doIndex; i ++){
+            //System.out.println("Replaying  " + (i)+"/"+ (turns.size())
+            // + ", filling " + turns.get(i).coordinates +" with "
+            // + turns.get(i).tileValue);
+            Turn turn  = turns.get(i);
+            turn.command.execute();
+            tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
+        }
+        doIndex--;
+        updateBoard();
+    }
+
+    public void redo(){
+        initTiles();
+        if(doIndex  >= turns.size())
+            return;
+
+        if(undoing) {
+            undoing = false;
+            if(doIndex !=0)
+                doIndex+=2;
+            else{
+                //do the first move
+                Turn turn  = turns.get(0);
+                turn.command.execute();
+                tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
+                doIndex++;
+                updateBoard();
+                return;
+            }
+        }else{
+            doIndex++;
+        }
+
+        for(int i = 0; i < doIndex; i ++){
+            //System.out.println("Rereplaying  " + (i)+"/"+ (turns.size())
+            //        + ", filling " + turns.get(i).coordinates +" with "
+            //        + turns.get(i).tileValue);
+
+            Turn turn  = turns.get(i);
+            turn.command.execute();
+            tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
+        }
+        updateBoard();
+    }
+
     // Function to call to step through the playback steps
     public void replay(){
         if(turnIndex >= turns.size()){
-            checkGameOver();
             return;
         }
         //System.out.println("Replaying  " + (turnIndex)+"/"+ (turns.size())
