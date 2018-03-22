@@ -8,8 +8,10 @@ public class Board {
     private Tile tiles[][];
     private Tile firstTiles[][];
     private ScoredCounter scoredCounter;
-    public Board(ScoredCounter scoredCounter){
+    private int tilesFilledAtStart;
+    public Board(ScoredCounter scoredCounter, int tilesFilledAtStart){
         this.scoredCounter = scoredCounter;
+        this.tilesFilledAtStart = tilesFilledAtStart;
     }
     public void initFromBoard(Board board){
         if (tiles == null) {
@@ -22,36 +24,52 @@ public class Board {
         }
     }
 
-    public void initFirstStage(int height, int width) {
+
+    public void initFirstStage(int height, int width, boolean random) {
 
         if (firstTiles == null) {
-
             firstTiles = new Tile[height][width];
+        }
 
-            // Actually instanciate firstTiles's tiles
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++)
+        // Actually instanciate firstTiles's tiles or fill it with zeros
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if(firstTiles[i][j] == null)
                     firstTiles[i][j] = new Tile(0);
+                else
+                    firstTiles[i][j].setNumber(0);
             }
         }
 
-        // Fill the tiles
-        firstTiles[0][0].setNumber(2);
-        firstTiles[0][1].setNumber(2);
-        firstTiles[0][2].setNumber(4);
-        firstTiles[0][3].setNumber(4);
-        firstTiles[1][0].setNumber(0);
-        firstTiles[1][1].setNumber(0);
-        firstTiles[1][2].setNumber(2);
-        firstTiles[1][3].setNumber(2);
-        firstTiles[2][0].setNumber(0);
-        firstTiles[2][1].setNumber(0);
-        firstTiles[2][2].setNumber(0);
-        firstTiles[2][3].setNumber(0);
-        firstTiles[3][0].setNumber(0);
-        firstTiles[3][1].setNumber(0);
-        firstTiles[3][2].setNumber(0);
-        firstTiles[3][3].setNumber(0);
+
+        if(random){
+            for(int i = 0; i < tilesFilledAtStart; i++) {
+                DuoTuple<Integer, Integer> randomPoint = RandomTilePicker.getInstance().update(firstTiles);
+
+                if (randomPoint != null) {
+                    firstTiles[randomPoint.x][randomPoint.y].setNumber(pickRandomTileValue());
+                }
+            }
+        }
+        else {
+            // Fill the tiles (for debug)
+            firstTiles[0][0].setNumber(2);
+            firstTiles[0][1].setNumber(2);
+            firstTiles[0][2].setNumber(4);
+            firstTiles[0][3].setNumber(4);
+            firstTiles[1][0].setNumber(0);
+            firstTiles[1][1].setNumber(0);
+            firstTiles[1][2].setNumber(2);
+            firstTiles[1][3].setNumber(2);
+            firstTiles[2][0].setNumber(0);
+            firstTiles[2][1].setNumber(0);
+            firstTiles[2][2].setNumber(0);
+            firstTiles[2][3].setNumber(0);
+            firstTiles[3][0].setNumber(0);
+            firstTiles[3][1].setNumber(0);
+            firstTiles[3][2].setNumber(0);
+            firstTiles[3][3].setNumber(0);
+        }
     }
 
     public void resetToFirstStage(int height, int width) {
@@ -115,7 +133,6 @@ public class Board {
                 merged = true;
                 if(updateScore) {
                     scoredCounter.setScore(scoredCounter.getScore()+ 2 * currTile.getNumber());
-                    //setScore(totalScore + 2 * currTile.getNumber());
                 }
                 currTile.setNumber(2 * currTile.getNumber());
 

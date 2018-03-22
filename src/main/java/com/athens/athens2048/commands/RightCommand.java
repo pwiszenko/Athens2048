@@ -8,12 +8,11 @@ import com.athens.athens2048.core.Tile;
 import static com.athens.athens2048.core.Direction.RIGHT;
 
 public class RightCommand  extends GameCommand implements Command {
-    //public RightCommand(Tile[][] tiles, Game game){
+
     public RightCommand(Board board, Game game){
         initialize(board, game);
     }
 
-    //public boolean execute(Tile[][] etiles, boolean updateScore){
     public boolean execute(Board board, boolean updateScore){
         boolean merged = false;
         for (int position = 0; position < board.getBoardWidth(); position++) {

@@ -8,14 +8,12 @@ import com.athens.athens2048.core.Tile;
 import static com.athens.athens2048.core.Direction.LEFT;
 
 public class LeftCommand extends GameCommand implements Command {
-    //public LeftCommand(Tile[][] tiles, Game game){
+
     public LeftCommand(Board board, Game game){
         initialize(board, game);
     }
 
-    //public boolean execute(Tile[][] etiles, boolean updateScore){
     public boolean execute(Board board, boolean updateScore){
-
         boolean merged = false;
         for (int position = 0; position < board.getBoardWidth(); position++) {
             if (board.update(LEFT, position, 0, board.getBoardWidth()-1, updateScore))
@@ -23,6 +21,7 @@ public class LeftCommand extends GameCommand implements Command {
         }
         return merged;
     }
+
     public Direction getDirection(){
         return Direction.LEFT;
     }

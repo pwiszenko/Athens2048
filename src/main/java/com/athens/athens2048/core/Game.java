@@ -18,8 +18,6 @@ public class Game implements ScoredCounter{
     private boolean gameOver = false;
     private List<GameObserver> gameObservers = new ArrayList<>();
 
-    //private Tile tiles[][];
-    //private Tile firstTiles[][];
     private ArrayList<Turn> turns;
     CommandManager commandManager = new CommandManager();
     Board board;
@@ -30,7 +28,7 @@ public class Game implements ScoredCounter{
     private boolean atFirstStage = false;
 
     Game() {
-        board = new Board(this);
+        board = new Board(this, 2);
         reset();
         commandManager.initCommands(board, this);
     }
@@ -58,7 +56,7 @@ public class Game implements ScoredCounter{
         // Init the firstTiles array
         initPlayback();
         // Init the game's tile array
-        initTiles();
+        resetToFirstStage();
         // Draw the commandManager
         updateBoard();
     }
@@ -71,44 +69,14 @@ public class Game implements ScoredCounter{
         turnIndex = 0;
         undoing = false;
 
-        board.initFirstStage(HEIGHT, WIDTH);
-/*
-        if(firstTiles == null) {
-
-            firstTiles = new Tile[HEIGHT][WIDTH];
-
-            // Actually instanciate firstTiles's tiles
-            for (int i = 0; i < HEIGHT; i++) {
-                for (int j = 0; j < WIDTH; j++)
-                    firstTiles[i][j] = new Tile(0);
-            }
-        }
-
-        // Fill the tiles
-        firstTiles[0][0].setNumber(2);
-        firstTiles[0][1].setNumber(2);
-        firstTiles[0][2].setNumber(4);
-        firstTiles[0][3].setNumber(4);
-        firstTiles[1][0].setNumber(0);
-        firstTiles[1][1].setNumber(0);
-        firstTiles[1][2].setNumber(2);
-        firstTiles[1][3].setNumber(2);
-        firstTiles[2][0].setNumber(0);
-        firstTiles[2][1].setNumber(0);
-        firstTiles[2][2].setNumber(0);
-        firstTiles[2][3].setNumber(0);
-        firstTiles[3][0].setNumber(0);
-        firstTiles[3][1].setNumber(0);
-        firstTiles[3][2].setNumber(0);
-        firstTiles[3][3].setNumber(0);
-*/
+        board.initFirstStage(HEIGHT, WIDTH, true);
     }
 
     // Function the undo the last done move
     public void undoStep() {
         setScore(0);
 
-        initTiles();
+        resetToFirstStage();
         if(turnIndex <= 0) {
             if(undoing) {
                 updateBoard();
@@ -131,7 +99,6 @@ public class Game implements ScoredCounter{
             Turn turn  = turns.get(i);
             turn.command.execute();
             board.setTileValue(turn.coordinates, turn.tileValue);
-            //tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
         }
         turnIndex--;
         updateBoard();
@@ -148,7 +115,7 @@ public class Game implements ScoredCounter{
     private boolean redo() {
         setScore(0);
 
-        initTiles();
+        resetToFirstStage();
         if(turnIndex  >= turns.size())
             return false;
 
@@ -161,7 +128,6 @@ public class Game implements ScoredCounter{
                 Turn turn  = turns.get(0);
                 turn.command.execute();
                 board.setTileValue(turn.coordinates, turn.tileValue);
-                //tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
                 turnIndex++;
                 updateBoard();
                 return true;
@@ -172,12 +138,9 @@ public class Game implements ScoredCounter{
         if(turns.size() == 0)
             return false;
         for(int i = 0; i < turnIndex; i ++){
-
-
             Turn turn  = turns.get(i);
             turn.command.execute();
             board.setTileValue(turn.coordinates, turn.tileValue);
-            //tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
         }
         updateBoard();
         return true;
@@ -186,7 +149,7 @@ public class Game implements ScoredCounter{
     // Function to call to restart from the beggining of the playback
     public void backToFirstStage() {
         setScore(0);
-        initTiles();
+        resetToFirstStage();
         turnIndex = 0;
         updateBoard();
     }
@@ -208,7 +171,6 @@ public class Game implements ScoredCounter{
         Turn turn  = turns.get(turnIndex);
         turn.command.execute();
         board.setTileValue(turn.coordinates, turn.tileValue);
-        //tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
         turnIndex++;
         return true;
     }
@@ -216,22 +178,8 @@ public class Game implements ScoredCounter{
 
     // Function to reset the commandManager's tiles to the starting state
     // It actually copies values from 'firstTiles' array to 'tiles' array
-    private void initTiles() {
+    private void resetToFirstStage() {
         board.resetToFirstStage(HEIGHT, WIDTH);
-        /*
-        if(tiles == null) {
-            tiles = new Tile[HEIGHT][WIDTH];
-        }
-
-        for(int i = 0; i < HEIGHT; i++) {
-            for (int j = 0; j < WIDTH; j++)
-                // Copy firstTiles's values to game's tiles array
-                if (tiles[i][j] == null)
-                    tiles[i][j] = new Tile(firstTiles[i][j].getNumber());
-                else
-                    tiles[i][j].setNumber(firstTiles[i][j].getNumber());
-        }
-        */
         atFirstStage = true;
     }
 
@@ -241,7 +189,6 @@ public class Game implements ScoredCounter{
             for (int j = 0; j < WIDTH; j++) {
                 for (GameObserver observer : gameObservers)
                     observer.updateTile(i, j, board.getTileValue(i, j));
-                    //observer.updateTile(i, j, tiles[i][j].getNumber());
             }
     }
 
@@ -257,14 +204,12 @@ public class Game implements ScoredCounter{
         if (gameOver)
             return;
 
-        // If this we change the very first move from history
-
+        // If we change the very first move from history
         if(turns.size()>0 && atFirstStage == true && direction != ((GameCommand)turns.get(0).command).getDirection()){
             turnIndex = 0;
             removeEnd(turns, turnIndex);
         }
-
-
+        
         if(turnIndex > 0 && turnIndex <= turns.size()){
             removeEnd(turns, turnIndex);
             turnIndex = 0;
@@ -274,12 +219,10 @@ public class Game implements ScoredCounter{
             return;
 
         DuoTuple<Integer, Integer> randomPoint = board.pickRandomTileCoordinates();
-        //DuoTuple<Integer, Integer> randomPoint = RandomTilePicker.getInstance().update(tiles);
 
         if (randomPoint != null) {
             int randomNumber = board.pickRandomTileValue();
             board.setTileValue(randomPoint, randomNumber);
-            //tiles[randomPoint.x][randomPoint.y].setNumber(randomNumber);
             registerTurn(direction, randomNumber, randomPoint);
         }
 
@@ -292,19 +235,8 @@ public class Game implements ScoredCounter{
     }
 
     private void checkGameOver() {
-/*
-        Tile [][] newTiles = new Tile[board.getBoardHeight()][board.getBoardWidth()];
-        for (int i = 0; i < board.getBoardHeight(); i++) {
-            for (int j = 0; j < board.getBoardWidth(); j++) {
-                newTiles[i][j] = new Tile(board.getTileValue(i,j));
-                //newTiles[i][j] = new Tile(tiles[i][j].getNumber());
-            }
-        }
-        */
-
-        Board newBoard = new Board(this);
+        Board newBoard = new Board(this, 0);
         newBoard.initFromBoard(board);
-
 
         boolean movePossible = false;
         for (Direction direction : Direction.values()) {
@@ -316,9 +248,7 @@ public class Game implements ScoredCounter{
 
         if (!movePossible) {
             gameOver = true;
-
             bestScore = bestScore < totalScore ? totalScore : bestScore;
-
             for (GameObserver observer : gameObservers)
                 observer.gameOver(bestScore);
         }
