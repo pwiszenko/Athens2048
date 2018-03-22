@@ -233,19 +233,6 @@ public class Game {
         moveCommands[slot] = moveCommand;
     }
 
-    // OnMove function for regular moves
-    // Regular meaning that we actully edit the 'tiles' array
-    // Non-regular is for the other onMove() which is used when doing checkGameOver()
-    private boolean onMove(Direction direction) {
-        return moveCommands[direction.getValue()].execute();
-    }
-
-    // OnMove function for non-regular moves
-    // Non-regular is used when doing checkGameOver()
-    // Regular moves is for when we actually edit the 'tiles' array
-    private boolean onMove(Direction direction, Tile[][] theTiles) {
-        return moveCommands[direction.getValue()].execute(theTiles, false);
-    }
 
     private void updateBoard() {
         for (int i = 0; i < HEIGHT; i++)
@@ -272,7 +259,7 @@ public class Game {
             turnIndex = 0;
         }
 
-        if (!merge(direction))
+        if (!computeMove(direction))
             return;
 
 
@@ -303,7 +290,7 @@ public class Game {
 
         boolean movePossible = false;
         for (Direction direction : Direction.values()) {
-            if (merge(direction, newTiles)) {
+            if (computeMove(direction, newTiles)) {
                 movePossible = true;
                 break;
             }
@@ -319,24 +306,18 @@ public class Game {
         }
     }
 
-    private boolean merge(Direction direction)
-    {
-        boolean merged;
-
-        // USE COMMAND PATTERN
-        merged = onMove(direction);
-
-        return merged;
+    // computeMove function for regular moves
+    // Regular meaning that we actually edit the 'tiles' array
+    // Non-regular is for the other computeMove() which is used when doing checkGameOver()
+    private boolean computeMove(Direction direction) {
+        return moveCommands[direction.getValue()].execute();
     }
 
-    private boolean merge(Direction direction, Tile [][] theTiles)
-    {
-        boolean merged;
-
-        // USE COMMAND PATTERN
-        merged = onMove(direction, theTiles);
-
-        return merged;
+    // computeMove function for non-regular moves
+    // Non-regular is used when doing checkGameOver()
+    // Regular moves is for when we actually edit the 'tiles' array
+    private boolean computeMove(Direction direction, Tile[][] theTiles) {
+        return moveCommands[direction.getValue()].execute(theTiles, false);
     }
 
     public boolean update(Direction direction, int position, int startIndex, int endIndex, Tile [][] theTiles, boolean updateScore)
