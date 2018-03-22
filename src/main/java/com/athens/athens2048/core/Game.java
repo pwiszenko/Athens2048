@@ -31,7 +31,9 @@ public class Game {
         if(turns == null)
             turns = new ArrayList<>();
         else
-            turns.clear();
+            removeEnd(turns, 0);
+        turnIndex = 0;
+        undoing = false;
 
         if(firstTiles == null) {
 
@@ -110,6 +112,8 @@ public class Game {
                 turnIndex--;
             }
         }
+        if(turns.size() == 0)
+            return;
 
         for(int i = 0; i < turnIndex; i ++){
             //System.out.println("Replaying  " + (i)+"/"+ (turns.size())
@@ -124,10 +128,10 @@ public class Game {
     }
 
     // Function the redo the last undone move
-    public void redo(){
+    public boolean redo(){
         initTiles();
         if(turnIndex  >= turns.size())
-            return;
+            return false;
 
         if(undoing) {
             undoing = false;
@@ -140,12 +144,13 @@ public class Game {
                 tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
                 turnIndex++;
                 updateBoard();
-                return;
+                return true;
             }
         }else{
             turnIndex++;
         }
-
+        if(turns.size() == 0)
+            return false;
         for(int i = 0; i < turnIndex; i ++){
 
 
@@ -154,6 +159,7 @@ public class Game {
             tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
         }
         updateBoard();
+        return true;
     }
 
     // Function to call to step through the playback steps by one
