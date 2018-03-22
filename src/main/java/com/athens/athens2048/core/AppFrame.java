@@ -5,6 +5,7 @@ import com.athens.athens2048.gui.DayTheme;
 import com.athens.athens2048.gui.NightTheme;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -17,9 +18,10 @@ class AppFrame extends JFrame implements GameOverListener {
     private JPanel gamePanel = new JPanel();
     private JPanel scorePanel = new JPanel();
     private JPanel bestScorePanel = new JPanel();
+    private JPanel commandsPanel = new JPanel();
 
     /**
-     * Variables of type {@link JLabel} that represent the player scores.
+     * Variables for the player scores.
      */
     private JLabel score_text = new JLabel("Score:");
     private JLabel max_text = new JLabel("Best:");
@@ -29,13 +31,24 @@ class AppFrame extends JFrame implements GameOverListener {
     private int best_score = 0;
 
     /**
+     * Variables for the commands instructions
+     */
+    private JLabel keyTText = new JLabel("Press T to change the game theme");
+    private JLabel keyUText = new JLabel("Press U to undo the move");
+    private JLabel keyYText = new JLabel("Press Y to redo the move");
+    private JLabel keyNText = new JLabel("Press N to restart the game");
+    private JLabel keyEText = new JLabel("Press E to see next move (playback mode)");
+    private JLabel keyRText = new JLabel("Press R to enter the playback mode");
+    private JLabel keyCommands = new JLabel("Instructions:");
+
+    /**
      * Theme variables of the game board - default: Day theme
      */
     private final int NIGHT = 1;
     private final int DAY = 0;
     private int currentTheme = DAY;
     private AppFrameTheme theme = new DayTheme();
-    private JLabel themeText = new JLabel("Change theme with T key", SwingConstants.CENTER);
+    private JLabel themeText = new JLabel("Day theme", SwingConstants.CENTER);
     private Game game;
 
     // Bord size (default: 4 - 4x4)
@@ -138,7 +151,6 @@ class AppFrame extends JFrame implements GameOverListener {
      */
     private void buildGameBoard() {
 
-
         // Setup the game title JPanel background and dimensions
         GridLayout customGridLayout = new GridLayout(max_tiles, max_tiles);
         customGridLayout.setHgap(15);
@@ -177,7 +189,7 @@ class AppFrame extends JFrame implements GameOverListener {
 
         // Setup the score tile in the JFrame
         scorePanel.setBackground(Color.LIGHT_GRAY);
-        scorePanel.setBounds(leftBorder + gameTitleBorder + max_tiles*100 + max_tiles*15 + 80, 150, 100, 60);
+        scorePanel.setBounds(leftBorder + gameTitleBorder + max_tiles*100 + max_tiles*15 + 80, 50, 100, 60);
 
         score_text.setAlignmentX(CENTER_ALIGNMENT);
         score_text.setFont(new Font("Arial", Font.BOLD, 20));
@@ -198,7 +210,7 @@ class AppFrame extends JFrame implements GameOverListener {
 
         // Setup the best score tile in the JFrame
         bestScorePanel.setBackground(Color.LIGHT_GRAY);
-        bestScorePanel.setBounds(leftBorder + gameTitleBorder + max_tiles*100 + max_tiles*15 + 80, 230, 100, 60);
+        bestScorePanel.setBounds(leftBorder + gameTitleBorder + max_tiles*100 + max_tiles*15 + 80, 130, 100, 60);
 
         max_text.setAlignmentX(CENTER_ALIGNMENT);
         max_text.setFont(new Font("Arial", Font.BOLD, 20));
@@ -208,15 +220,36 @@ class AppFrame extends JFrame implements GameOverListener {
         max_score.setFont(new Font("Arial", Font.BOLD, 15));
         max_score.setForeground(Color.DARK_GRAY);
 
-        // Add the change theme text
+        // Add and setup the change theme text
         this.add(themeText);
 
-        // Setup the change theme text
         themeText.setFont(new Font("Arial", Font.PLAIN, 15));
-        themeText.setBounds(leftBorder + gameTitleBorder + max_tiles*100 + max_tiles*15 + 40, 350, 180, 50);
+        themeText.setBorder(LineBorder.createGrayLineBorder());
+        themeText.setBounds(leftBorder + gameTitleBorder + max_tiles*100 + max_tiles*15 + 40, 210, 180, 50);
+
+        // Add and setup the commands panel
+        this.add(commandsPanel);
+        commandsPanel.setOpaque(false);
+        commandsPanel.setLayout(new GridLayout(7,1));
+        commandsPanel.add(keyCommands);
+        commandsPanel.add(keyTText);
+        commandsPanel.add(keyUText);
+        commandsPanel.add(keyYText);
+        commandsPanel.add(keyNText);
+        commandsPanel.add(keyRText);
+        commandsPanel.add(keyEText);
+        commandsPanel.setBounds(leftBorder + gameTitleBorder + max_tiles*100 + max_tiles*15 + 20, 280, 240, 170);
+
+        keyCommands.setFont(new Font("Arial", Font.BOLD, 15));
+        keyTText.setFont(new Font("Arial", Font.PLAIN, 12));
+        keyUText.setFont(new Font("Arial", Font.PLAIN, 12));
+        keyYText.setFont(new Font("Arial", Font.PLAIN, 12));
+        keyNText.setFont(new Font("Arial", Font.PLAIN, 12));
+        keyRText.setFont(new Font("Arial", Font.PLAIN, 12));
+        keyEText.setFont(new Font("Arial", Font.PLAIN, 12));
 
         // Setup the theme
-        setTheme(NIGHT);
+        setTheme(DAY);
         themeText.setText("Change theme with T key");
     }
 
@@ -244,18 +277,24 @@ class AppFrame extends JFrame implements GameOverListener {
             case NIGHT:
                 currentTheme = NIGHT;
                 theme = new NightTheme();
-                theme.setPanelsBackground(this);
-                theme.setThemeLabel(themeText);
                 themeText.setText("Night theme");
                 break;
             case DAY:
                 currentTheme = DAY;
                 theme = new DayTheme();
-                theme.setPanelsBackground(this);
-                theme.setThemeLabel(themeText);
                 themeText.setText("Day theme");
                 break;
         }
+        theme.setPanelsBackground(this);
+        theme.setThemeLabel(themeText);
+        theme.setThemeLabel(keyCommands);
+        theme.setThemeLabel(keyEText);
+        theme.setThemeLabel(keyUText);
+        theme.setThemeLabel(keyRText);
+        theme.setThemeLabel(keyYText);
+        theme.setThemeLabel(keyNText);
+        theme.setThemeLabel(keyTText);
+
         updateThemeBoard();
     }
 
