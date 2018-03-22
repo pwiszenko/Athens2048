@@ -40,4 +40,8 @@ Command pattern is replacing a huge switch() structure in our code. It alos allo
 every single move of the player and every single spawned number.
 
 Using this recording, we added the possibility to replay our play since the begining over and over.
-That is not to be confused with an 'undo' feature.
+
+We also used it to implement undo/redo feature.
+
+Note: Replay and undo/redo can't be used at the sale time during a party and both mess up with
+the score. However, the principiles work.
