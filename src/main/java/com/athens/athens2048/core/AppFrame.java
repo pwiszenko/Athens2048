@@ -10,7 +10,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-class AppFrame extends JFrame implements GameOverListener {
+
+class AppFrame extends JFrame implements GameObserver {
 
     /**
      * Variables of type {@link JPanel} that represent the different game titles.
@@ -27,8 +28,6 @@ class AppFrame extends JFrame implements GameOverListener {
     private JLabel max_text = new JLabel("Best:");
     private JLabel current_score = new JLabel("0");
     private JLabel max_score = new JLabel("0");
-    private int total_score = 0;
-    private int best_score = 0;
 
     /**
      * Variables for the commands instructions
@@ -48,8 +47,8 @@ class AppFrame extends JFrame implements GameOverListener {
     private final int DAY = 0;
     private int currentTheme = DAY;
     private AppFrameTheme theme = new DayTheme();
+    private GameController gameController;
     private JLabel themeText = new JLabel("Day theme", SwingConstants.CENTER);
-    private Game game;
 
     // Bord size (default: 4 - 4x4)
     private int max_tiles = 4;
@@ -65,7 +64,6 @@ class AppFrame extends JFrame implements GameOverListener {
     private JButton[][] gameTile = new JButton[max_tiles][max_tiles];
 
     AppFrame() {
-
         // Set JFrame properties for the game board
         this.setTitle("2048 by ATHENS March 2018");
         this.setSize(800, 600);
@@ -77,80 +75,17 @@ class AppFrame extends JFrame implements GameOverListener {
 
         // Generates the game panels
         buildGameBoard();
-        game = new Game(this);
-        startNewGame();
 
-        // Add key listeners for Up/North/East/West keys
-        this.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent event) {
-            }
+        gameController = new GameController(this);
 
-            @Override
-            public void keyPressed(KeyEvent event) {
-                if (event.getKeyCode() == KeyEvent.VK_LEFT) {
-                    game.onKeyPressed(Direction.LEFT);
-                }
-                if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    game.onKeyPressed(Direction.RIGHT);
-                }
-                if (event.getKeyCode() == KeyEvent.VK_UP) {
-                    game.onKeyPressed(Direction.TOP);
-                }
-                if (event.getKeyCode() == KeyEvent.VK_DOWN) {
-                    game.onKeyPressed(Direction.BOTTOM);
-                }
-                if (event.getKeyCode() == KeyEvent.VK_T) {
-                    changeTheme();
-                }
-                if (event.getKeyCode() == KeyEvent.VK_N) {
-                    startNewGame();
-                }
-                if (event.getKeyCode() == KeyEvent.VK_R) {
-                    replayGame();
-                }
-                if (event.getKeyCode() == KeyEvent.VK_E) {
-                    game.replay();
-                }
-                if (event.getKeyCode() == KeyEvent.VK_U) {
-                    total_score = 0;
-                    game.undo();
-                    current_score.setText(Integer.toString(total_score));
-                }
-                if (event.getKeyCode() == KeyEvent.VK_Y) {
-                    int old_score = total_score;
-                    total_score = 0;
-                    if (game.redo() == false){
-                        total_score = old_score;
-                    }
-                    current_score.setText(Integer.toString(total_score));
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-        });
-    }
-
-    private void replayGame(){
-        total_score = 0;
-        game.resetTurnIndex();
-        current_score.setText(Integer.toString(total_score));
-    }
-
-    private void startNewGame() {
-        total_score = 0;
-        game.reset();
-        game.addGameOverListener(this);
-        current_score.setText(Integer.toString(total_score));
+        initKeyListeners();
+        gameController.startGame();
     }
 
     /**
      * Creates the game titles and the other elements in the {@link JFrame}
      */
     private void buildGameBoard() {
-
         // Setup the game title JPanel background and dimensions
         GridLayout customGridLayout = new GridLayout(max_tiles, max_tiles);
         customGridLayout.setHgap(15);
@@ -250,7 +185,53 @@ class AppFrame extends JFrame implements GameOverListener {
 
         // Setup the theme
         setTheme(DAY);
-        themeText.setText("Change theme with T key");
+    }
+
+    private void initKeyListeners() {
+        // Add key listeners for Up/North/East/West keys
+        this.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent event) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyCode() == KeyEvent.VK_LEFT) {
+                    gameController.move(Direction.LEFT);
+                }
+                if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    gameController.move(Direction.RIGHT);
+                }
+                if (event.getKeyCode() == KeyEvent.VK_UP) {
+                    gameController.move(Direction.TOP);
+                }
+                if (event.getKeyCode() == KeyEvent.VK_DOWN) {
+                    gameController.move(Direction.BOTTOM);
+                }
+                if (event.getKeyCode() == KeyEvent.VK_T) {
+                    changeTheme();
+                }
+                if (event.getKeyCode() == KeyEvent.VK_N) {
+                    gameController.startGame();
+                }
+                if (event.getKeyCode() == KeyEvent.VK_R) {
+                    gameController.replayGame();
+                }
+                if (event.getKeyCode() == KeyEvent.VK_E) {
+                    gameController.replayStep();
+                }
+                if (event.getKeyCode() == KeyEvent.VK_U) {
+                    gameController.undoStep();
+                }
+                if (event.getKeyCode() == KeyEvent.VK_Y) {
+                    gameController.redoStep();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
     }
 
     /**
@@ -311,6 +292,7 @@ class AppFrame extends JFrame implements GameOverListener {
 
         // Update color of the tile according to its value
         updateTileColor(x, y, value);
+        repaint();
     }
 
     /**
@@ -345,18 +327,17 @@ class AppFrame extends JFrame implements GameOverListener {
     }
 
     /**
-     * Changes the JLabel of the current score
+     * Displays game over text
      */
-    public void increaseScore(int increment) {
-        total_score += increment;
-        current_score.setText(Integer.toString(total_score));
+    public void gameOver(int bestScore) {
+        max_score.setText(Integer.toString(bestScore));
     }
 
     /**
-     * Displays game over text
+     * Changes the JLabel of the current score
      */
-    public void gameOver() {
-        best_score = total_score > best_score ? total_score : best_score;
-        max_score.setText(Integer.toString(best_score));
+    @Override
+    public void scoreUpdated(int score) {
+        current_score.setText(Integer.toString(score));
     }
 }

@@ -13,19 +13,50 @@ public class Game {
     private final int HEIGHT = 4;
     private final int WIDTH = 4;
 
+    private int totalScore = 0;
+    private int bestScore = 0;
 
     private boolean gameOver = false;
-    private List<GameOverListener> gameOverListeners;
+    private List<GameObserver> gameObservers = new ArrayList<>();
 
     private Tile tiles[][];
     private Tile firstTiles[][];
-    private AppFrame frame;
-    Command[] moveCommands;
-    ArrayList<Turn> turns;
+    private Command[] moveCommands;
+    private ArrayList<Turn> turns;
 
     // For the replay functionality
     private int turnIndex = 0;
     private boolean undoing = false;
+
+    Game() {
+        reset();
+        initCommands();
+    }
+
+    public void addGameObserver(GameObserver gameObserver) {
+        this.gameObservers.add(gameObserver);
+    }
+
+    public void removeGameObserver(GameObserver gameObserver) {
+        this.gameObservers.remove(gameObserver);
+    }
+
+    private void setScore(int score) {
+        totalScore = score;
+        for (GameObserver observer : gameObservers)
+            observer.scoreUpdated(totalScore);
+    }
+
+    public void reset() {
+        setScore(0);
+
+        // Init the firstTiles array
+        initPlayback();
+        // Init the game's tile array
+        initTiles();
+        // Draw the board
+        updateBoard();
+    }
 
     private void initPlayback(){
         if(turns == null)
@@ -65,60 +96,40 @@ public class Game {
         firstTiles[3][3].setNumber(0);
     }
 
-
-    Game(AppFrame frame) {
-        this.frame = frame;
-
-        // Reset everything int the game
-        reset();
-
-        // Initialize commands
-        initCommands();
-    }
-
-    public void reset(){
-        initGameOverListeners();
-
-        // Init the firstTiles array
-        initPlayback();
-        // Init the game's tile array
-        initTiles();
-        // Draw the board
-        updateBoard();
-    }
-
-
     // Function to call to restart from the beggining of the playback
-    public void resetTurnIndex(){
+    public void resetTurnIndex() {
+        setScore(0);
+
         initTiles();
-        updateBoard();
         turnIndex = 0;
+
+        updateBoard();
     }
 
     // Function the undo the last done move
-    public void undo(){
+    public void undoStep() {
+        setScore(0);
+
         initTiles();
         if(turnIndex <= 0) {
-            if(undoing == true){
+            if(undoing) {
                 updateBoard();
                 return;
             }
             undoing = true;
             turnIndex = turns.size() - 1;
         }
-        else{
-            if(undoing == false) {
+        else {
+            if(!undoing) {
                 undoing = true;
                 turnIndex--;
             }
         }
-        if(turns.size() == 0)
+
+        if (turns.size() == 0)
             return;
 
-        for(int i = 0; i < turnIndex; i ++){
-            //System.out.println("Replaying  " + (i)+"/"+ (turns.size())
-            // + ", filling " + turns.get(i).coordinates +" with "
-            // + turns.get(i).tileValue);
+        for (int i = 0; i < turnIndex; i ++) {
             Turn turn  = turns.get(i);
             turn.command.execute();
             tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
@@ -127,8 +138,17 @@ public class Game {
         updateBoard();
     }
 
+    public void redoStep() {
+        int oldScore = totalScore;
+        setScore(0);
+        if (!redo())
+            setScore(oldScore);
+    }
+
     // Function the redo the last undone move
-    public boolean redo(){
+    private boolean redo() {
+        setScore(0);
+
         initTiles();
         if(turnIndex  >= turns.size())
             return false;
@@ -136,8 +156,8 @@ public class Game {
         if(undoing) {
             undoing = false;
             if(turnIndex !=0)
-                turnIndex+=2;
-            else{
+                turnIndex += 2;
+            else {
                 //do the first move
                 Turn turn  = turns.get(0);
                 turn.command.execute();
@@ -146,7 +166,7 @@ public class Game {
                 updateBoard();
                 return true;
             }
-        }else{
+        } else {
             turnIndex++;
         }
         if(turns.size() == 0)
@@ -170,9 +190,8 @@ public class Game {
         Turn turn  = turns.get(turnIndex);
         turn.command.execute();
         tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
-        updateBoard();
         turnIndex++;
-
+        updateBoard();
     }
 
     private void initCommands() {
@@ -192,14 +211,6 @@ public class Game {
         setCommand(Direction.LEFT.getValue(), leftCommand);
     }
 
-    private void initGameOverListeners() {
-        if(gameOverListeners == null)
-            this.gameOverListeners = new ArrayList<>();
-        else
-            gameOverListeners.clear();
-    }
-
-
     // Function to reset the board's tiles to the starting state
     // It actually copies values from 'firstTiles' array to 'tiles' array
     private void initTiles() {
@@ -218,47 +229,34 @@ public class Game {
         }
     }
 
-
-    public void addGameOverListener(GameOverListener gameOverListener) {
-        this.gameOverListeners.add(gameOverListener);
-    }
-
-    public void removeGameOverListener(GameOverListener gameOverListener) {
-        this.gameOverListeners.remove(gameOverListener);
-    }
-
-    private void notifyGameOverListeners() {
-        for (GameOverListener listener : gameOverListeners)
-            listener.gameOver();
-    }
-
-    public void setCommand(int slot, Command moveCommand) {
+    private void setCommand(int slot, Command moveCommand) {
         moveCommands[slot] = moveCommand;
     }
 
     // OnMove function for regular moves
     // Regular meaning that we actully edit the 'tiles' array
     // Non-regular is for the other onMove() which is used when doing checkGameOver()
-    public boolean onMove(Direction direction) {
+    private boolean onMove(Direction direction) {
         return moveCommands[direction.getValue()].execute();
     }
 
     // OnMove function for non-regular moves
     // Non-regular is used when doing checkGameOver()
     // Regular moves is for when we actually edit the 'tiles' array
-    public boolean onMove(Direction direction, Tile [][] theTiles) {
+    private boolean onMove(Direction direction, Tile[][] theTiles) {
         return moveCommands[direction.getValue()].execute(theTiles, false);
     }
 
     private void updateBoard() {
         for (int i = 0; i < HEIGHT; i++)
-            for (int j = 0; j < WIDTH; j++)
-                frame.updateTile(i, j, tiles[i][j].getNumber());
-        frame.repaint();
+            for (int j = 0; j < WIDTH; j++) {
+                for (GameObserver observer : gameObservers)
+                    observer.updateTile(i, j, tiles[i][j].getNumber());
+            }
     }
 
     // Function to remove the end of an ArrayList
-    static void removeEnd(ArrayList<Turn> turns, int includedStart){
+    private static void removeEnd(ArrayList<Turn> turns, int includedStart){
         int size = turns.size();
         for(int i = includedStart; i< size; i++){
             turns.remove(turns.size()-1);
@@ -313,13 +311,17 @@ public class Game {
 
         if (!movePossible) {
             gameOver = true;
-            notifyGameOverListeners();
+
+            bestScore = bestScore < totalScore ? totalScore : bestScore;
+
+            for (GameObserver observer : gameObservers)
+                observer.gameOver(bestScore);
         }
     }
 
     private boolean merge(Direction direction)
     {
-        boolean merged = false;
+        boolean merged;
 
         // USE COMMAND PATTERN
         merged = onMove(direction);
@@ -329,7 +331,7 @@ public class Game {
 
     private boolean merge(Direction direction, Tile [][] theTiles)
     {
-        boolean merged = false;
+        boolean merged;
 
         // USE COMMAND PATTERN
         merged = onMove(direction, theTiles);
@@ -354,8 +356,9 @@ public class Game {
             {
                 // merge
                 merged = true;
-                if(updateScore)
-                    frame.increaseScore(2 * currTile.getNumber());
+                if(updateScore) {
+                    setScore(totalScore + 2 * currTile.getNumber());
+                }
                 currTile.setNumber(2 * currTile.getNumber());
 
                 // brings every tile to the left
