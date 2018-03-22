@@ -30,11 +30,21 @@ The new theme changes only defined parts of the UI, keeping already programmed f
 
 ## Observator<a id="Observator"></a>
 
-This pattern was used mainly to make classes more independent, which allows easier further upgrades / improvements.
+This pattern was used to notify any display class (such as the AppFrame class) that no other move is possible,
+it is a game over.
+
 
 ## Command<a id="Command"></a>
 
-Command pattern allows adding logging game events, and reconstruct every movement from the start, by merging logged events. A replay/playback feature could be added in the future.
+Command pattern is replacing a huge switch() structure in our code. It alos allows us the record
+every single move of the player and every single spawned number.
+
+Using this recording, we added the possibility to replay our play since the begining over and over.
+Pressing `r` restarts the scenario at the begining, pressing `e` steps through the scenario
+
+We also used it to implement undo/redo feature.
+Pressing `u` will undo last move, pressing `y` will redo last undone move.
+
 
 ## MVC<a id="MVC"></a>
 
