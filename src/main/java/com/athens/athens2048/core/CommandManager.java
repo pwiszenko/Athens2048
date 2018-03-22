@@ -2,13 +2,10 @@ package com.athens.athens2048.core;
 
 import com.athens.athens2048.commands.*;
 
+
 public class CommandManager {
     private Command[] moveCommands;
-    public CommandManager(){
 
-    }
-
-    //public void initCommands(Tile[][] tiles, Game game) {
     public void initCommands(Board board, Game game) {
         moveCommands = new Command[Direction.directionCount];
         Command noCommand = new NoCommand(board, game);
@@ -29,6 +26,7 @@ public class CommandManager {
     private void setCommand(int slot, Command moveCommand) {
         moveCommands[slot] = moveCommand;
     }
+
     public Command getCommand(Direction direction){
         return moveCommands[direction.getValue()];
     }
@@ -47,5 +45,4 @@ public class CommandManager {
     public boolean computeMove(Direction direction, Board board) {
         return moveCommands[direction.getValue()].execute(board, false);
     }
-
 }

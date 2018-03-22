@@ -54,9 +54,9 @@ class AppFrame extends JFrame implements GameObserver {
     private int max_tiles = 4;
 
     // X and Y where the titles start to be drawn
-    private int leftBorder = 40;
-    private int topBorder = 40;
-    private int gameTitleBorder = 10;
+    private final static int leftBorder = 40;
+    private final static int topBorder = 40;
+    private final static int gameTitleBorder = 10;
 
     /**
      * Variable of type {@link JButton} that represents an array of game titles.

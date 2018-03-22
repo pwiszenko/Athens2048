@@ -1,13 +1,12 @@
 package com.athens.athens2048.core;
 
-
 import com.athens.athens2048.commands.*;
 import com.athens.athens2048.random.DuoTuple;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Game implements ScoredCounter{
+public class Game implements ScoredCounter {
 
     private final int HEIGHT = 4;
     private final int WIDTH = 4;
@@ -19,8 +18,8 @@ public class Game implements ScoredCounter{
     private List<GameObserver> gameObservers = new ArrayList<>();
 
     private ArrayList<Turn> turns;
-    CommandManager commandManager = new CommandManager();
-    Board board;
+    private CommandManager commandManager = new CommandManager();
+    private Board board;
 
     // For the replay functionality
     private int turnIndex = 0;
@@ -61,7 +60,7 @@ public class Game implements ScoredCounter{
         updateBoard();
     }
 
-    private void initPlayback(){
+    private void initPlayback() {
         if(turns == null)
             turns = new ArrayList<>();
         else
@@ -69,7 +68,7 @@ public class Game implements ScoredCounter{
         turnIndex = 0;
         undoing = false;
 
-        board.initFirstStage(HEIGHT, WIDTH, true);
+        board.initFirstStage(HEIGHT, WIDTH);
     }
 
     // Function the undo the last done move
@@ -137,7 +136,7 @@ public class Game implements ScoredCounter{
         }
         if(turns.size() == 0)
             return false;
-        for(int i = 0; i < turnIndex; i ++){
+        for(int i = 0; i < turnIndex; i ++) {
             Turn turn  = turns.get(i);
             turn.command.execute();
             board.setTileValue(turn.coordinates, turn.tileValue);
@@ -154,18 +153,16 @@ public class Game implements ScoredCounter{
         updateBoard();
     }
 
-    public void backToLastMove(){
+    public void backToLastMove() {
         backToFirstStage();
         atFirstStage = false;
-        while(replay() == true){
-
-        }
+        while (replay()) {}
         updateBoard();
     }
 
     // Function to call to step through the playback steps by one
-    private boolean replay(){
-        if(turnIndex >= turns.size()){
+    private boolean replay() {
+        if(turnIndex >= turns.size()) {
             return false;
         }
         Turn turn  = turns.get(turnIndex);
@@ -205,12 +202,13 @@ public class Game implements ScoredCounter{
             return;
 
         // If we change the very first move from history
-        if(turns.size()>0 && atFirstStage == true && direction != ((GameCommand)turns.get(0).command).getDirection()){
+        if (turns.size()>0 && atFirstStage
+                && direction != ((GameCommand)turns.get(0).command).getDirection()) {
             turnIndex = 0;
             removeEnd(turns, turnIndex);
         }
 
-        if(turnIndex > 0 && turnIndex <= turns.size()){
+        if (turnIndex > 0 && turnIndex <= turns.size()){
             removeEnd(turns, turnIndex);
             turnIndex = 0;
         }
@@ -253,6 +251,4 @@ public class Game implements ScoredCounter{
                 observer.gameOver(bestScore);
         }
     }
-
-
 }

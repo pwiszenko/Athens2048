@@ -3,35 +3,36 @@ package com.athens.athens2048.core;
 import com.athens.athens2048.random.DuoTuple;
 import com.athens.athens2048.random.RandomTilePicker;
 
+
 public class Board {
 
     private Tile tiles[][];
     private Tile firstTiles[][];
     private ScoredCounter scoredCounter;
     private int tilesFilledAtStart;
-    public Board(ScoredCounter scoredCounter, int tilesFilledAtStart){
+
+    public Board(ScoredCounter scoredCounter, int tilesFilledAtStart) {
         this.scoredCounter = scoredCounter;
         this.tilesFilledAtStart = tilesFilledAtStart;
     }
-    public void initFromBoard(Board board){
+
+    public void initFromBoard(Board board) {
         if (tiles == null) {
-            tiles = new Tile[board.getBoardHeight()][board.getBoardWidth()];
+            tiles = new Tile[board.getHeight()][board.getWidth()];
         }
 
-        for (int i = 0; i < board.getBoardHeight(); i++) {
-            for (int j = 0; j < board.getBoardWidth(); j++)
+        for (int i = 0; i < board.getHeight(); i++) {
+            for (int j = 0; j < board.getWidth(); j++)
                 tiles[i][j] = new Tile(board.getTileValue(i,j));
         }
     }
 
-
-    public void initFirstStage(int height, int width, boolean random) {
-
+    public void initFirstStage(int height, int width) {
         if (firstTiles == null) {
             firstTiles = new Tile[height][width];
         }
 
-        // Actually instanciate firstTiles's tiles or fill it with zeros
+        // Actually instantiate firstTiles's tiles or fill it with zeros
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if(firstTiles[i][j] == null)
@@ -41,34 +42,12 @@ public class Board {
             }
         }
 
+        for (int i = 0; i < tilesFilledAtStart; i++) {
+            DuoTuple<Integer, Integer> randomPoint = RandomTilePicker.getInstance().update(firstTiles);
 
-        if(random){
-            for(int i = 0; i < tilesFilledAtStart; i++) {
-                DuoTuple<Integer, Integer> randomPoint = RandomTilePicker.getInstance().update(firstTiles);
-
-                if (randomPoint != null) {
-                    firstTiles[randomPoint.x][randomPoint.y].setNumber(pickRandomTileValue());
-                }
+            if (randomPoint != null) {
+                firstTiles[randomPoint.x][randomPoint.y].setNumber(pickRandomTileValue());
             }
-        }
-        else {
-            // Fill the tiles (for debug)
-            firstTiles[0][0].setNumber(2);
-            firstTiles[0][1].setNumber(2);
-            firstTiles[0][2].setNumber(4);
-            firstTiles[0][3].setNumber(4);
-            firstTiles[1][0].setNumber(0);
-            firstTiles[1][1].setNumber(0);
-            firstTiles[1][2].setNumber(2);
-            firstTiles[1][3].setNumber(2);
-            firstTiles[2][0].setNumber(0);
-            firstTiles[2][1].setNumber(0);
-            firstTiles[2][2].setNumber(0);
-            firstTiles[2][3].setNumber(0);
-            firstTiles[3][0].setNumber(0);
-            firstTiles[3][1].setNumber(0);
-            firstTiles[3][2].setNumber(0);
-            firstTiles[3][3].setNumber(0);
         }
     }
 
@@ -87,10 +66,7 @@ public class Board {
         }
     }
 
-    public void setTileValue(int x, int y, int value){
-        tiles[x][y].setNumber(value);
-    }
-    public void setTileValue(DuoTuple<Integer, Integer> coordinates, int value){
+    public void setTileValue(DuoTuple<Integer, Integer> coordinates, int value) {
         tiles[coordinates.x][coordinates.y].setNumber(value);
     }
 
@@ -98,15 +74,15 @@ public class Board {
         return tiles[x][y].getNumber();
     }
 
-    public int getBoardWidth(){
+    public int getWidth(){
         return tiles[0].length;
     }
 
-    public int getBoardHeight(){
+    public int getHeight(){
         return tiles.length;
     }
 
-    public DuoTuple<Integer, Integer> pickRandomTileCoordinates(){
+    public DuoTuple<Integer, Integer> pickRandomTileCoordinates() {
         return RandomTilePicker.getInstance().update(tiles);
     }
 
@@ -114,21 +90,18 @@ public class Board {
         return RandomTilePicker.getInstance().pickRandomTileValue();
     }
 
-    public boolean update(Direction direction, int position, int startIndex, int endIndex, boolean updateScore)
-    {
+    public boolean update(Direction direction, int position, int startIndex, int endIndex, boolean updateScore) {
         boolean merged = false;
         if (slide(direction, position, startIndex, endIndex))
             merged = true;
 
         int diff = startIndex < endIndex ? 1 : -1;
 
-        for (int i = startIndex; i * diff <= (endIndex - diff) * diff; i += diff)
-        {
+        for (int i = startIndex; i * diff <= (endIndex - diff) * diff; i += diff) {
             Tile currTile = Direction.isHorizontal(direction) ? tiles[position][i] : tiles[i][position];
             Tile nextTile = Direction.isHorizontal(direction) ? tiles[position][i + diff] : tiles[i + diff][position];
 
-            if (currTile.getNumber() == nextTile.getNumber() && currTile.getNumber() != 0)
-            {
+            if (currTile.getNumber() == nextTile.getNumber() && currTile.getNumber() != 0) {
                 // merge
                 merged = true;
                 if(updateScore) {
@@ -138,30 +111,26 @@ public class Board {
 
                 // brings every tile to the left
                 int j = i + diff;
-                while (j * diff <= (endIndex - diff) * diff)
-                {
-                    if (Direction.isHorizontal(direction)) {
+                while (j * diff <= (endIndex - diff) * diff) {
+                    if (Direction.isHorizontal(direction))
                         tiles[position][j].setNumber(tiles[position][j + diff].getNumber());
-                    } else {
+                    else
                         tiles[j][position].setNumber(tiles[j + diff][position].getNumber());
-                    }
 
                     j += diff;
                 }
 
                 // makes the last tile = 0
-                if (Direction.isHorizontal(direction)) {
+                if (Direction.isHorizontal(direction))
                     tiles[position][j].setNumber(0);
-                } else {
+                else
                     tiles[j][position].setNumber(0);
-                }
             }
         }
         return merged;
     }
 
-    private boolean slide(Direction direction, int position, int startIndex, int endIndex)
-    {
+    private boolean slide(Direction direction, int position, int startIndex, int endIndex) {
         boolean shifted = false;
         int diff = startIndex < endIndex ? 1 : -1;
 
