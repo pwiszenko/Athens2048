@@ -57,7 +57,7 @@ public class Game implements ScoredCounter{
         initPlayback();
         // Init the game's tile array
         resetToFirstStage();
-        // Draw the commandManager
+        // Draw the Board
         updateBoard();
     }
 
@@ -176,7 +176,7 @@ public class Game implements ScoredCounter{
     }
 
 
-    // Function to reset the commandManager's tiles to the starting state
+    // Function to reset the Board's tiles to the starting state
     // It actually copies values from 'firstTiles' array to 'tiles' array
     private void resetToFirstStage() {
         board.resetToFirstStage(HEIGHT, WIDTH);
