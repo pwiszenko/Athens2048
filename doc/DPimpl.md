@@ -1,6 +1,6 @@
 # Design pattern implementation <a id="DP"></a>
 
-This game uses Singleton, Strategy, Observator and Command patterns.
+This game uses Singleton, Strategy, Observator, Command and MVC patterns.
 
 *Decoration pattern* wasn't used, because it would have no use for our game. The most obvious added functionalities of 2048 are:
 - possibility to change grid's size
@@ -30,17 +30,12 @@ The new theme changes only defined parts of the UI, keeping already programmed f
 
 ## Observator<a id="Observator"></a>
 
-This pattern was used to notify any display class (such as the AppFrame class) that no other move is possible,
-it is a game over.
-
+This pattern was used mainly to make classes more independent, which allows easier further upgrades / improvements.
 
 ## Command<a id="Command"></a>
 
-Command pattern is replacing a huge switch() structure in our code. It alos allows us the record
-every single move of the player and every single spawned number.
+Command pattern allows adding logging game events, and reconstruct every movement from the start, by merging logged events. A replay/playback feature could be added in the future.
 
-Using this recording, we added the possibility to replay our play since the begining over and over.
-Pressing `r` restarts the scenario at the begining, pressing `e` steps through the scenario
+## MVC<a id="MVC"></a>
 
-We also used it to implement undo/redo feature.
-Pressing `u` will undo last move, pressing `y` will redo last undone move.
+Model view controller pattern allowed to separate responsibility of tasks in the game: movement management, GUI display, computations of changes in the board following user's input.
