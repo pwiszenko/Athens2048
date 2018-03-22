@@ -3,12 +3,11 @@ package com.athens.athens2048.core;
 
 import com.athens.athens2048.commands.*;
 import com.athens.athens2048.random.DuoTuple;
-import com.athens.athens2048.random.RandomTilePicker;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Game {
+public class Game implements ScoredCounter{
 
     private final int HEIGHT = 4;
     private final int WIDTH = 4;
@@ -19,10 +18,11 @@ public class Game {
     private boolean gameOver = false;
     private List<GameObserver> gameObservers = new ArrayList<>();
 
-    private Tile tiles[][];
-    private Tile firstTiles[][];
-    private Command[] moveCommands;
+    //private Tile tiles[][];
+    //private Tile firstTiles[][];
     private ArrayList<Turn> turns;
+    CommandManager commandManager = new CommandManager();
+    Board board;
 
     // For the replay functionality
     private int turnIndex = 0;
@@ -30,8 +30,9 @@ public class Game {
     private boolean atFirstStage = false;
 
     Game() {
+        board = new Board(this);
         reset();
-        initCommands();
+        commandManager.initCommands(board, this);
     }
 
     public void addGameObserver(GameObserver gameObserver) {
@@ -42,10 +43,13 @@ public class Game {
         this.gameObservers.remove(gameObserver);
     }
 
-    private void setScore(int score) {
+    public void setScore(int score) {
         totalScore = score;
         for (GameObserver observer : gameObservers)
             observer.scoreUpdated(totalScore);
+    }
+    public int getScore(){
+        return totalScore;
     }
 
     public void reset() {
@@ -55,7 +59,7 @@ public class Game {
         initPlayback();
         // Init the game's tile array
         initTiles();
-        // Draw the board
+        // Draw the commandManager
         updateBoard();
     }
 
@@ -67,6 +71,8 @@ public class Game {
         turnIndex = 0;
         undoing = false;
 
+        board.initFirstStage(HEIGHT, WIDTH);
+/*
         if(firstTiles == null) {
 
             firstTiles = new Tile[HEIGHT][WIDTH];
@@ -95,6 +101,7 @@ public class Game {
         firstTiles[3][1].setNumber(0);
         firstTiles[3][2].setNumber(0);
         firstTiles[3][3].setNumber(0);
+*/
     }
 
     // Function the undo the last done move
@@ -123,7 +130,8 @@ public class Game {
         for (int i = 0; i < turnIndex; i ++) {
             Turn turn  = turns.get(i);
             turn.command.execute();
-            tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
+            board.setTileValue(turn.coordinates, turn.tileValue);
+            //tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
         }
         turnIndex--;
         updateBoard();
@@ -152,7 +160,8 @@ public class Game {
                 //do the first move
                 Turn turn  = turns.get(0);
                 turn.command.execute();
-                tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
+                board.setTileValue(turn.coordinates, turn.tileValue);
+                //tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
                 turnIndex++;
                 updateBoard();
                 return true;
@@ -167,7 +176,8 @@ public class Game {
 
             Turn turn  = turns.get(i);
             turn.command.execute();
-            tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
+            board.setTileValue(turn.coordinates, turn.tileValue);
+            //tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
         }
         updateBoard();
         return true;
@@ -197,32 +207,18 @@ public class Game {
         }
         Turn turn  = turns.get(turnIndex);
         turn.command.execute();
-        tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
+        board.setTileValue(turn.coordinates, turn.tileValue);
+        //tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
         turnIndex++;
         return true;
     }
 
 
-    private void initCommands() {
-        moveCommands = new Command[Direction.directionCount];
-        Command noCommand = new NoCommand(tiles, this);
-        for (int i = 0; i < Direction.directionCount; i++) {
-            moveCommands[i] = noCommand;
-        }
-        UpCommand upCommand = new UpCommand(tiles, this);
-        DownCommand downCommand = new DownCommand(tiles, this);
-        RightCommand rightCommand = new RightCommand(tiles, this);
-        LeftCommand leftCommand = new LeftCommand(tiles, this);
-
-        setCommand(Direction.TOP.getValue(), upCommand);
-        setCommand(Direction.RIGHT.getValue(), rightCommand);
-        setCommand(Direction.BOTTOM.getValue(), downCommand);
-        setCommand(Direction.LEFT.getValue(), leftCommand);
-    }
-
-    // Function to reset the board's tiles to the starting state
+    // Function to reset the commandManager's tiles to the starting state
     // It actually copies values from 'firstTiles' array to 'tiles' array
     private void initTiles() {
+        board.resetToFirstStage(HEIGHT, WIDTH);
+        /*
         if(tiles == null) {
             tiles = new Tile[HEIGHT][WIDTH];
         }
@@ -235,11 +231,8 @@ public class Game {
                 else
                     tiles[i][j].setNumber(firstTiles[i][j].getNumber());
         }
+        */
         atFirstStage = true;
-    }
-
-    private void setCommand(int slot, Command moveCommand) {
-        moveCommands[slot] = moveCommand;
     }
 
 
@@ -247,7 +240,8 @@ public class Game {
         for (int i = 0; i < HEIGHT; i++)
             for (int j = 0; j < WIDTH; j++) {
                 for (GameObserver observer : gameObservers)
-                    observer.updateTile(i, j, tiles[i][j].getNumber());
+                    observer.updateTile(i, j, board.getTileValue(i, j));
+                    //observer.updateTile(i, j, tiles[i][j].getNumber());
             }
     }
 
@@ -259,7 +253,7 @@ public class Game {
         }
     }
 
-    synchronized void  onKeyPressed(Direction direction) {
+    void  onKeyPressed(Direction direction) {
         if (gameOver)
             return;
 
@@ -276,15 +270,16 @@ public class Game {
             turnIndex = 0;
         }
         atFirstStage = false;
-        if (!computeMove(direction))
+        if (!commandManager.computeMove(direction))
             return;
 
-
-        DuoTuple<Integer, Integer> randomPoint = RandomTilePicker.getInstance().update(tiles);
+        DuoTuple<Integer, Integer> randomPoint = board.pickRandomTileCoordinates();
+        //DuoTuple<Integer, Integer> randomPoint = RandomTilePicker.getInstance().update(tiles);
 
         if (randomPoint != null) {
-            int randomNumber = RandomTilePicker.getInstance().pickRandomTileValue();
-            tiles[randomPoint.x][randomPoint.y].setNumber(randomNumber);
+            int randomNumber = board.pickRandomTileValue();
+            board.setTileValue(randomPoint, randomNumber);
+            //tiles[randomPoint.x][randomPoint.y].setNumber(randomNumber);
             registerTurn(direction, randomNumber, randomPoint);
         }
 
@@ -293,21 +288,27 @@ public class Game {
     }
 
     private void registerTurn(Direction direction, int randomNumber, DuoTuple<Integer,Integer> coordinates) {
-        turns.add(new Turn(randomNumber, coordinates, moveCommands[direction.getValue()]));
+        turns.add(new Turn(randomNumber, coordinates, commandManager.getCommand(direction)));
     }
 
     private void checkGameOver() {
-        Tile [][] newTiles = new Tile[tiles.length][tiles[0].length];
-        for (int i = 0; i < tiles.length; i++) {
-            //newTiles[i] = new Tile[tiles.length];
-            for (int j = 0; j < tiles[0].length; j++) {
-                newTiles[i][j] = new Tile(tiles[i][j].getNumber());
+/*
+        Tile [][] newTiles = new Tile[board.getBoardHeight()][board.getBoardWidth()];
+        for (int i = 0; i < board.getBoardHeight(); i++) {
+            for (int j = 0; j < board.getBoardWidth(); j++) {
+                newTiles[i][j] = new Tile(board.getTileValue(i,j));
+                //newTiles[i][j] = new Tile(tiles[i][j].getNumber());
             }
         }
+        */
+
+        Board newBoard = new Board(this);
+        newBoard.initFromBoard(board);
+
 
         boolean movePossible = false;
         for (Direction direction : Direction.values()) {
-            if (computeMove(direction, newTiles)) {
+            if (commandManager.computeMove(direction, newBoard)) {
                 movePossible = true;
                 break;
             }
@@ -323,93 +324,5 @@ public class Game {
         }
     }
 
-    // computeMove function for regular moves
-    // Regular meaning that we actually edit the 'tiles' array
-    // Non-regular is for the other computeMove() which is used when doing checkGameOver()
-    private boolean computeMove(Direction direction) {
-        return moveCommands[direction.getValue()].execute();
-    }
 
-    // computeMove function for non-regular moves
-    // Non-regular is used when doing checkGameOver()
-    // Regular moves is for when we actually edit the 'tiles' array
-    private boolean computeMove(Direction direction, Tile[][] theTiles) {
-        return moveCommands[direction.getValue()].execute(theTiles, false);
-    }
-
-    public boolean update(Direction direction, int position, int startIndex, int endIndex, Tile [][] theTiles, boolean updateScore)
-    {
-        boolean merged = false;
-        if (slide(direction, position, startIndex, endIndex, theTiles))
-            merged = true;
-
-        int diff = startIndex < endIndex ? 1 : -1;
-
-        for (int i = startIndex; i * diff <= (endIndex - diff) * diff; i += diff)
-        {
-            Tile currTile = Direction.isHorizontal(direction) ? theTiles[position][i] : theTiles[i][position];
-            Tile nextTile = Direction.isHorizontal(direction) ? theTiles[position][i + diff] : theTiles[i + diff][position];
-
-            if (currTile.getNumber() == nextTile.getNumber() && currTile.getNumber() != 0)
-            {
-                // merge
-                merged = true;
-                if(updateScore) {
-                    setScore(totalScore + 2 * currTile.getNumber());
-                }
-                currTile.setNumber(2 * currTile.getNumber());
-
-                // brings every tile to the left
-                int j = i + diff;
-                while (j * diff <= (endIndex - diff) * diff)
-                {
-                    if (Direction.isHorizontal(direction)) {
-                        theTiles[position][j].setNumber(theTiles[position][j + diff].getNumber());
-                    } else {
-                        theTiles[j][position].setNumber(theTiles[j + diff][position].getNumber());
-                    }
-
-                    j += diff;
-                }
-
-                // makes the last tile = 0
-                if (Direction.isHorizontal(direction)) {
-                    theTiles[position][j].setNumber(0);
-                } else {
-                    theTiles[j][position].setNumber(0);
-                }
-            }
-        }
-        return merged;
-    }
-
-    private boolean slide(Direction direction, int position, int startIndex, int endIndex, Tile [][]theTiles)
-    {
-        boolean shifted = false;
-        int diff = startIndex < endIndex ? 1 : -1;
-
-        for (int i = startIndex + diff; i * diff <= endIndex * diff; i += diff) {
-            Tile currTile = Direction.isHorizontal(direction) ? theTiles[position][i] : theTiles[i][position];
-            Tile prevTile = Direction.isHorizontal(direction) ? theTiles[position][i - diff] : theTiles[i - diff][position];
-
-            int currIndex = i;
-            if (currTile.getNumber() == 0)
-                continue;
-            while (prevTile.getNumber() == 0) {
-                shifted = true;
-                prevTile.setNumber(currTile.getNumber());
-                currTile.setNumber(0);
-                currIndex -= diff;
-                if (currIndex != startIndex) {
-                    currTile = prevTile;
-                    prevTile = Direction.isHorizontal(direction)
-                            ? theTiles[position][currIndex - diff] : theTiles[currIndex - diff][position];
-                }
-                else
-                    break;
-            }
-        }
-
-        return shifted;
-    }
 }
