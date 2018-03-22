@@ -41,7 +41,7 @@ class AppFrame extends JFrame implements GameObserver {
     private JLabel keyCommands = new JLabel("Instructions:");
 
     /**
-     * Theme variables of the game commandManager - default: Day theme
+     * Theme variables of the game Board - default: Day theme
      */
     private final int NIGHT = 1;
     private final int DAY = 0;
@@ -64,7 +64,7 @@ class AppFrame extends JFrame implements GameObserver {
     private JButton[][] gameTile = new JButton[max_tiles][max_tiles];
 
     AppFrame() {
-        // Set JFrame properties for the game commandManager
+        // Set JFrame properties for the game Board
         this.setTitle("2048 by ATHENS March 2018");
         this.setSize(800, 600);
         this.setLayout(null);
@@ -314,7 +314,7 @@ class AppFrame extends JFrame implements GameObserver {
     }
 
     /**
-     * Repaints the whole commandManager
+     * Repaints the whole board
      */
     private void updateThemeBoard(){
         for(int x = 0; x < max_tiles; x++) {

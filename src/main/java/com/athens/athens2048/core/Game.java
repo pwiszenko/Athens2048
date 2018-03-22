@@ -209,7 +209,7 @@ public class Game implements ScoredCounter{
             turnIndex = 0;
             removeEnd(turns, turnIndex);
         }
-        
+
         if(turnIndex > 0 && turnIndex <= turns.size()){
             removeEnd(turns, turnIndex);
             turnIndex = 0;
