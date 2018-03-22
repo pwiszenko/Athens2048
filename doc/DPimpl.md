@@ -43,5 +43,4 @@ Using this recording, we added the possibility to replay our play since the begi
 
 We also used it to implement undo/redo feature.
 
-Note: Replay and undo/redo can't be used at the sale time during a party and both mess up with
-the score. However, the principiles work.
+Note: Replay and undo/redo can't be used at the same time during a party. Meaning you have to "end" the whole replay sequence before being able to undo/redo without messing up with the board. However, the principles work.
