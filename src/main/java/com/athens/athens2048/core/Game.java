@@ -25,7 +25,6 @@ public class Game {
 
     // For the replay functionality
     private int turnIndex = 0;
-    private int doIndex = 0;
     private boolean undoing = false;
 
     private void initPlayback(){
@@ -96,22 +95,22 @@ public class Game {
 
     public void undo(){
         initTiles();
-        if(doIndex <= 0) {
+        if(turnIndex <= 0) {
             if(undoing == true){
                 updateBoard();
                 return;
             }
             undoing = true;
-            doIndex = turns.size() - 1;
+            turnIndex = turns.size() - 1;
         }
         else{
             if(undoing == false) {
                 undoing = true;
-                doIndex--;
+                turnIndex--;
             }
         }
 
-        for(int i = 0; i < doIndex; i ++){
+        for(int i = 0; i < turnIndex; i ++){
             //System.out.println("Replaying  " + (i)+"/"+ (turns.size())
             // + ", filling " + turns.get(i).coordinates +" with "
             // + turns.get(i).tileValue);
@@ -119,33 +118,33 @@ public class Game {
             turn.command.execute();
             tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
         }
-        doIndex--;
+        turnIndex--;
         updateBoard();
     }
 
     public void redo(){
         initTiles();
-        if(doIndex  >= turns.size())
+        if(turnIndex  >= turns.size())
             return;
 
         if(undoing) {
             undoing = false;
-            if(doIndex !=0)
-                doIndex+=2;
+            if(turnIndex !=0)
+                turnIndex+=2;
             else{
                 //do the first move
                 Turn turn  = turns.get(0);
                 turn.command.execute();
                 tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
-                doIndex++;
+                turnIndex++;
                 updateBoard();
                 return;
             }
         }else{
-            doIndex++;
+            turnIndex++;
         }
 
-        for(int i = 0; i < doIndex; i ++){
+        for(int i = 0; i < turnIndex; i ++){
             //System.out.println("Rereplaying  " + (i)+"/"+ (turns.size())
             //        + ", filling " + turns.get(i).coordinates +" with "
             //        + turns.get(i).tileValue);

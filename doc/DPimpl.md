@@ -40,7 +40,7 @@ Command pattern is replacing a huge switch() structure in our code. It alos allo
 every single move of the player and every single spawned number.
 
 Using this recording, we added the possibility to replay our play since the begining over and over.
+Pressing `r` restarts the scenario at the begining, pressing `e` steps through the scenario
 
 We also used it to implement undo/redo feature.
-
-Note: Replay and undo/redo can't be used at the same time during a party. Meaning you have to "end" the whole replay sequence before being able to undo/redo without messing up with the board. However, the principles work.
+Press `u` will undo last move, pressing `y` will redo last undone move.

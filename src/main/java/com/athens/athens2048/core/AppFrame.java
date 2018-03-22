@@ -101,6 +101,7 @@ class AppFrame extends JFrame implements GameOverListener {
                 }
                 if (event.getKeyCode() == KeyEvent.VK_U) {
                     total_score = 0;
+                    current_score.setText(Integer.toString(total_score));
                     game.undo();
                 }
                 if (event.getKeyCode() == KeyEvent.VK_Y) {
