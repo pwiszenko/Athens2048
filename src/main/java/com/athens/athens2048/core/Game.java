@@ -233,7 +233,10 @@ public class Game {
 
     public boolean onMove(Direction direction) {
         return moveCommands[direction.getValue()].execute();
+    }
 
+    public boolean onMove(Direction direction, Tile [][] theTiles) {
+        return moveCommands[direction.getValue()].execute(theTiles, false);
     }
 
     private void updateBoard() {
@@ -271,7 +274,7 @@ public class Game {
             int randomNumber = RandomTilePicker.getInstance().pickRandomTileValue();
             tiles[randomPoint.x][randomPoint.y].setNumber(randomNumber);
             registerTurn(direction, randomNumber, randomPoint);
-            System.out.println((turns.size()-1)+"/"+ (turns.size()) + " > Moving to "+ direction + " filling " + randomPoint +" with "+ randomNumber);
+            //System.out.println((turns.size()-1)+"/"+ (turns.size()) + " > Moving to "+ direction + " filling " + randomPoint +" with "+ randomNumber);
         }
 
         updateBoard();
@@ -283,26 +286,26 @@ public class Game {
     }
 
     private void checkGameOver() {
-        Tile [][] newTiles = new Tile[tiles.length][];
+        Tile [][] newTiles = new Tile[tiles.length][tiles[0].length];
         for (int i = 0; i < tiles.length; i++) {
-            newTiles[i] = new Tile[tiles.length];
-            for (int j = 0; j < tiles.length; j++) {
+            //newTiles[i] = new Tile[tiles.length];
+            for (int j = 0; j < tiles[0].length; j++) {
                 newTiles[i][j] = new Tile(tiles[i][j].getNumber());
             }
         }
 
         boolean movePossible = false;
         for (Direction direction : Direction.values()) {
-            if (merge(direction)) {
+            if (merge(direction, newTiles)) {
                 movePossible = true;
                 break;
             }
         }
-
+/*
         for (int i = 0; i < tiles.length; i++)
             for (int j = 0; j < tiles.length; j++)
                 tiles[i][j].setNumber(newTiles[i][j].getNumber());
-
+*/
         if (!movePossible) {
             gameOver = true;
             notifyGameOverListeners();
@@ -319,24 +322,35 @@ public class Game {
         return merged;
     }
 
-    public boolean update(Direction direction, int position, int startIndex, int endIndex)
+    private boolean merge(Direction direction, Tile [][] theTiles)
     {
         boolean merged = false;
-        if (slide(direction, position, startIndex, endIndex))
+
+        // USE COMMAND PATTERN
+        merged = onMove(direction, theTiles);
+
+        return merged;
+    }
+
+    public boolean update(Direction direction, int position, int startIndex, int endIndex, Tile [][] theTiles, boolean updateScore)
+    {
+        boolean merged = false;
+        if (slide(direction, position, startIndex, endIndex, theTiles))
             merged = true;
 
         int diff = startIndex < endIndex ? 1 : -1;
 
         for (int i = startIndex; i * diff <= (endIndex - diff) * diff; i += diff)
         {
-            Tile currTile = Direction.isHorizontal(direction) ? tiles[position][i] : tiles[i][position];
-            Tile nextTile = Direction.isHorizontal(direction) ? tiles[position][i + diff] : tiles[i + diff][position];
+            Tile currTile = Direction.isHorizontal(direction) ? theTiles[position][i] : theTiles[i][position];
+            Tile nextTile = Direction.isHorizontal(direction) ? theTiles[position][i + diff] : theTiles[i + diff][position];
 
             if (currTile.getNumber() == nextTile.getNumber() && currTile.getNumber() != 0)
             {
                 // merge
                 merged = true;
-                frame.increaseScore(2 * currTile.getNumber());
+                if(updateScore)
+                    frame.increaseScore(2 * currTile.getNumber());
                 currTile.setNumber(2 * currTile.getNumber());
 
                 // brings every tile to the left
@@ -344,9 +358,9 @@ public class Game {
                 while (j * diff <= (endIndex - diff) * diff)
                 {
                     if (Direction.isHorizontal(direction)) {
-                        tiles[position][j].setNumber(tiles[position][j + diff].getNumber());
+                        theTiles[position][j].setNumber(theTiles[position][j + diff].getNumber());
                     } else {
-                        tiles[j][position].setNumber(tiles[j + diff][position].getNumber());
+                        theTiles[j][position].setNumber(theTiles[j + diff][position].getNumber());
                     }
 
                     j += diff;
@@ -354,23 +368,23 @@ public class Game {
 
                 // makes the last tile = 0
                 if (Direction.isHorizontal(direction)) {
-                    tiles[position][j].setNumber(0);
+                    theTiles[position][j].setNumber(0);
                 } else {
-                    tiles[j][position].setNumber(0);
+                    theTiles[j][position].setNumber(0);
                 }
             }
         }
         return merged;
     }
 
-    private boolean slide(Direction direction, int position, int startIndex, int endIndex)
+    private boolean slide(Direction direction, int position, int startIndex, int endIndex, Tile [][]theTiles)
     {
         boolean shifted = false;
         int diff = startIndex < endIndex ? 1 : -1;
 
         for (int i = startIndex + diff; i * diff <= endIndex * diff; i += diff) {
-            Tile currTile = Direction.isHorizontal(direction) ? tiles[position][i] : tiles[i][position];
-            Tile prevTile = Direction.isHorizontal(direction) ? tiles[position][i - diff] : tiles[i - diff][position];
+            Tile currTile = Direction.isHorizontal(direction) ? theTiles[position][i] : theTiles[i][position];
+            Tile prevTile = Direction.isHorizontal(direction) ? theTiles[position][i - diff] : theTiles[i - diff][position];
 
             int currIndex = i;
             if (currTile.getNumber() == 0)
@@ -383,7 +397,7 @@ public class Game {
                 if (currIndex != startIndex) {
                     currTile = prevTile;
                     prevTile = Direction.isHorizontal(direction)
-                            ? tiles[position][currIndex - diff] : tiles[currIndex - diff][position];
+                            ? theTiles[position][currIndex - diff] : theTiles[currIndex - diff][position];
                 }
                 else
                     break;

@@ -11,10 +11,10 @@ public class UpCommand extends GameCommand implements Command {
         initialize(tiles, game);
     }
 
-    public boolean execute(){
+    public boolean execute(Tile[][] etiles, boolean updateScore){
         boolean merged = false;
-        for (int position = 0; position < tiles.length; position++) {
-            if (game.update(TOP, position, 0, tiles.length - 1))
+        for (int position = 0; position < etiles.length; position++) {
+            if (game.update(TOP, position, 0, etiles.length - 1, etiles, updateScore))
                 merged = true;
         }
 

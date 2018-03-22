@@ -10,10 +10,10 @@ public class RightCommand  extends GameCommand implements Command {
         initialize(tiles, game);
     }
 
-    public boolean execute(){
+    public boolean execute(Tile[][] etiles, boolean updateScore){
         boolean merged = false;
-        for (int position = 0; position < tiles[0].length; position++) {
-            if (game.update(RIGHT, position, tiles[0].length - 1, 0))
+        for (int position = 0; position < etiles[0].length; position++) {
+            if (game.update(RIGHT, position, etiles[0].length - 1, 0, etiles, updateScore))
                 merged = true;
         }
         return merged;

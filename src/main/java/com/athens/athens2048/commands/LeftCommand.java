@@ -10,11 +10,11 @@ public class LeftCommand extends GameCommand implements Command {
         initialize(tiles, game);
     }
 
-    public boolean execute(){
+    public boolean execute(Tile[][] etiles, boolean updateScore){
 
         boolean merged = false;
-        for (int position = 0; position < tiles[0].length; position++) {
-            if (game.update(LEFT, position, 0, tiles[0].length-1))
+        for (int position = 0; position < etiles[0].length; position++) {
+            if (game.update(LEFT, position, 0, etiles[0].length-1, etiles, updateScore))
                 merged = true;
         }
         return merged;

@@ -11,10 +11,10 @@ public class DownCommand extends GameCommand implements Command {
     }
 
 
-    public boolean execute(){
+    public boolean execute(Tile[][] etiles, boolean updateScore){
         boolean merged = false;
-        for (int position = 0; position < tiles.length; position++) {
-            if (game.update(BOTTOM, position, tiles.length - 1, 0))
+        for (int position = 0; position < etiles.length; position++) {
+            if (game.update(BOTTOM, position, etiles.length - 1, 0, etiles, updateScore))
                 merged =  true;
         }
         return merged;
