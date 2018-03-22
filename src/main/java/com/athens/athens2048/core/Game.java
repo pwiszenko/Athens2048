@@ -93,6 +93,7 @@ public class Game {
         turnIndex = 0;
     }
 
+    // Function the undo the last done move
     public void undo(){
         initTiles();
         if(turnIndex <= 0) {
@@ -122,6 +123,7 @@ public class Game {
         updateBoard();
     }
 
+    // Function the redo the last undone move
     public void redo(){
         initTiles();
         if(turnIndex  >= turns.size())
@@ -145,9 +147,7 @@ public class Game {
         }
 
         for(int i = 0; i < turnIndex; i ++){
-            //System.out.println("Rereplaying  " + (i)+"/"+ (turns.size())
-            //        + ", filling " + turns.get(i).coordinates +" with "
-            //        + turns.get(i).tileValue);
+
 
             Turn turn  = turns.get(i);
             turn.command.execute();
@@ -156,14 +156,11 @@ public class Game {
         updateBoard();
     }
 
-    // Function to call to step through the playback steps
+    // Function to call to step through the playback steps by one
     public void replay(){
         if(turnIndex >= turns.size()){
             return;
         }
-        //System.out.println("Replaying  " + (turnIndex)+"/"+ (turns.size())
-        // + ", filling " + turns.get(turnIndex).coordinates +" with "
-        // + turns.get(turnIndex).tileValue);
         Turn turn  = turns.get(turnIndex);
         turn.command.execute();
         tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
@@ -196,6 +193,9 @@ public class Game {
             gameOverListeners.clear();
     }
 
+
+    // Function to reset the board's tiles to the starting state
+    // It actually copies values from 'firstTiles' array to 'tiles' array
     private void initTiles() {
         if(tiles == null) {
             tiles = new Tile[HEIGHT][WIDTH];
@@ -230,10 +230,16 @@ public class Game {
         moveCommands[slot] = moveCommand;
     }
 
+    // OnMove function for regular moves
+    // Regular meaning that we actully edit the 'tiles' array
+    // Non-regular is for the other onMove() which is used when doing checkGameOver()
     public boolean onMove(Direction direction) {
         return moveCommands[direction.getValue()].execute();
     }
 
+    // OnMove function for non-regular moves
+    // Non-regular is used when doing checkGameOver()
+    // Regular moves is for when we actually edit the 'tiles' array
     public boolean onMove(Direction direction, Tile [][] theTiles) {
         return moveCommands[direction.getValue()].execute(theTiles, false);
     }
@@ -245,21 +251,20 @@ public class Game {
         frame.repaint();
     }
 
+    // Function to remove the end of an ArrayList
     static void removeEnd(ArrayList<Turn> turns, int includedStart){
         int size = turns.size();
         for(int i = includedStart; i< size; i++){
             turns.remove(turns.size()-1);
-            //System.out.println("size = "+turns.size());
         }
     }
+
     void onKeyPressed(Direction direction) {
         if (gameOver)
             return;
 
         if(turnIndex > 0 && turnIndex < turns.size()){
-            //System.out.println("Removing from "+ turnIndex+" to "+ (turns.size()-1));
             removeEnd(turns, turnIndex);
-            //System.out.println("New size = "+ turns.size());
             turnIndex = 0;
         }
 
@@ -273,7 +278,6 @@ public class Game {
             int randomNumber = RandomTilePicker.getInstance().pickRandomTileValue();
             tiles[randomPoint.x][randomPoint.y].setNumber(randomNumber);
             registerTurn(direction, randomNumber, randomPoint);
-            //System.out.println((turns.size()-1)+"/"+ (turns.size()) + " > Moving to "+ direction + " filling " + randomPoint +" with "+ randomNumber);
         }
 
         updateBoard();
@@ -300,11 +304,7 @@ public class Game {
                 break;
             }
         }
-/*
-        for (int i = 0; i < tiles.length; i++)
-            for (int j = 0; j < tiles.length; j++)
-                tiles[i][j].setNumber(newTiles[i][j].getNumber());
-*/
+
         if (!movePossible) {
             gameOver = true;
             notifyGameOverListeners();

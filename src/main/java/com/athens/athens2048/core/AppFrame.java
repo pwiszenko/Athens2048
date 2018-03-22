@@ -101,12 +101,13 @@ class AppFrame extends JFrame implements GameOverListener {
                 }
                 if (event.getKeyCode() == KeyEvent.VK_U) {
                     total_score = 0;
-                    current_score.setText(Integer.toString(total_score));
                     game.undo();
+                    current_score.setText(Integer.toString(total_score));
                 }
                 if (event.getKeyCode() == KeyEvent.VK_Y) {
                     total_score = 0;
                     game.redo();
+                    current_score.setText(Integer.toString(total_score));
                 }
             }
 
@@ -118,15 +119,15 @@ class AppFrame extends JFrame implements GameOverListener {
 
     private void replayGame(){
         total_score = 0;
-        current_score.setText(Integer.toString(total_score));
         game.resetTurnIndex();
+        current_score.setText(Integer.toString(total_score));
     }
 
     private void startNewGame() {
         total_score = 0;
-        current_score.setText(Integer.toString(total_score));
         game.reset();
         game.addGameOverListener(this);
+        current_score.setText(Integer.toString(total_score));
     }
 
     /**
