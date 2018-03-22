@@ -4,25 +4,24 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
-
 public class RandomSelector {
 
     private  class Item {
 
-        public final int value;
-        public final int relativeProb;
+        final int value;
+        final int relativeProb;
 
-        public Item( int value, int relativeProb) {
+        Item( int value, int relativeProb) {
             this.value = value;
             this.relativeProb = relativeProb;
         }
     }
 
-    ArrayList<Item> items = new ArrayList<Item>();
-    Random rand = new Random();
-    int totalSum = 0;
+    private ArrayList<Item> items = new ArrayList<>();
+    private Random rand = new Random();
+    private int totalSum = 0;
 
-    public RandomSelector() {
+    RandomSelector() {
         items.add(new Item(2, 90));
         items.add(new Item(4, 10));
         for(Item item : items) {

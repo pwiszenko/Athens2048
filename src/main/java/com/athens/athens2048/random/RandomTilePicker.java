@@ -1,8 +1,10 @@
 package com.athens.athens2048.random;
+
 import com.athens.athens2048.core.Tile;
 
 import java.util.Random;
 import java.util.ArrayList;
+
 
 public class RandomTilePicker{
 	private Random rand;
