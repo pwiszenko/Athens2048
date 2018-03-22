@@ -7,14 +7,17 @@ Athens2048
 
 ## Table of contents
 
-* [Rules and logic](../Doc/Rulesnlogic.md/)
-  * [Rules](../Doc/Rulesnlogic.md/#Rules)
-  * [Movement](../Doc/Rulesnlogic.md/#Movement)
-  * [Merging](../Doc/Rulesnlogic.md/#Merging)
-  * [Spawning](../Doc/Rulesnlogic.md/#Spawning)
-* [Design pattern implementation](../Doc/DPimpl.md/#DP)
-  * [Singleton](../Doc/DPimpl.md/#Singleton)
-  * [Strategy](../Doc/DPimpl.md/#Strategy)
+* [Rules and logic](./doc/Rulesnlogic.md/)
+  * [Rules](./doc/Rulesnlogic.md/#Rules)
+  * [Movement](./doc/Rulesnlogic.md/#Movement)
+  * [Merging](./doc/Rulesnlogic.md/#Merging)
+  * [Spawning](./doc/Rulesnlogic.md/#Spawning)
+* [Design pattern implementation](./doc/DPimpl.md/#DP)
+  * [Singleton](./doc/DPimpl.md/#Singleton)
+  * [Strategy](./doc/DPimpl.md/#Strategy)
+  * [Observator](./doc/DPimpl.md/#Observator)
+  * [Command](./doc/DPimpl.md/#Command)
+  * [MVC](./doc/DPimpl.md/#MVC)
 
 ***
 
@@ -22,7 +25,6 @@ Athens2048
 ## Built With
 
 * [IntelliJ](https://www.jetbrains.com/idea/) - IDE
-
 * [Swing](https://docs.oracle.com/javase/7/docs/api/javax/swing/package-summary.html) - GUI library
 * [Maven](https://maven.apache.org/) - Dependency Management
 * [JUnit](https://junit.org/) - Used for unitary tests
@@ -31,7 +33,7 @@ Athens2048
 
 ## Authors
 
-* **Antony Lopez** - *Random picker*
+* **Antony Lopez** - *Random picker, logic*
 * **Paweł Wiszenko** - *Project setup, logic*
 * **Luís Alves** - *GUI*
 * **Mateus Orsoni Cabral** - *Core logic*
