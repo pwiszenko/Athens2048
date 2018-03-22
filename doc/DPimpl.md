@@ -43,4 +43,4 @@ Using this recording, we added the possibility to replay our play since the begi
 Pressing `r` restarts the scenario at the begining, pressing `e` steps through the scenario
 
 We also used it to implement undo/redo feature.
-Press `u` will undo last move, pressing `y` will redo last undone move.
+Pressing `u` will undo last move, pressing `y` will redo last undone move.
