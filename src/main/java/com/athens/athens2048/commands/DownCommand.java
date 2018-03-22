@@ -1,5 +1,6 @@
 package com.athens.athens2048.commands;
 
+import com.athens.athens2048.core.Direction;
 import com.athens.athens2048.core.Game;
 import com.athens.athens2048.core.Tile;
 
@@ -18,6 +19,10 @@ public class DownCommand extends GameCommand implements Command {
                 merged =  true;
         }
         return merged;
+    }
+
+    public Direction getDirection(){
+        return Direction.BOTTOM;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.athens.athens2048.commands;
 
+import com.athens.athens2048.core.Direction;
 import com.athens.athens2048.core.Game;
 import com.athens.athens2048.core.Tile;
 
@@ -14,4 +15,5 @@ public abstract class GameCommand implements Command{
     public boolean execute(){
         return execute(tiles, true);
     }
+    public abstract Direction getDirection();
 }

@@ -1,6 +1,7 @@
 package com.athens.athens2048.commands;
 
 
+import com.athens.athens2048.core.Direction;
 import com.athens.athens2048.core.Game;
 import com.athens.athens2048.core.Tile;
 
@@ -12,6 +13,10 @@ public class NoCommand extends GameCommand implements Command {
 
     public boolean execute(Tile[][] etiles, boolean updateScore){
         return false;
+    }
+
+    public Direction getDirection(){
+        return Direction.TOP;
     }
 
 }

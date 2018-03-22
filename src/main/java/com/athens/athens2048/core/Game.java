@@ -27,6 +27,7 @@ public class Game {
     // For the replay functionality
     private int turnIndex = 0;
     private boolean undoing = false;
+    private boolean atFirstStage = false;
 
     Game() {
         reset();
@@ -49,7 +50,7 @@ public class Game {
 
     public void reset() {
         setScore(0);
-
+        gameOver = false;
         // Init the firstTiles array
         initPlayback();
         // Init the game's tile array
@@ -94,16 +95,6 @@ public class Game {
         firstTiles[3][1].setNumber(0);
         firstTiles[3][2].setNumber(0);
         firstTiles[3][3].setNumber(0);
-    }
-
-    // Function to call to restart from the beggining of the playback
-    public void resetTurnIndex() {
-        setScore(0);
-
-        initTiles();
-        turnIndex = 0;
-
-        updateBoard();
     }
 
     // Function the undo the last done move
@@ -182,17 +173,35 @@ public class Game {
         return true;
     }
 
+    // Function to call to restart from the beggining of the playback
+    public void backToFirstStage() {
+        setScore(0);
+        initTiles();
+        turnIndex = 0;
+        updateBoard();
+    }
+
+    public void backToLastMove(){
+        backToFirstStage();
+        atFirstStage = false;
+        while(replay() == true){
+
+        }
+        updateBoard();
+    }
+
     // Function to call to step through the playback steps by one
-    public void replay(){
+    private boolean replay(){
         if(turnIndex >= turns.size()){
-            return;
+            return false;
         }
         Turn turn  = turns.get(turnIndex);
         turn.command.execute();
         tiles[turn.coordinates.x][turn.coordinates.y].setNumber(turn.tileValue);
         turnIndex++;
-        updateBoard();
+        return true;
     }
+
 
     private void initCommands() {
         moveCommands = new Command[Direction.directionCount];
@@ -218,15 +227,15 @@ public class Game {
             tiles = new Tile[HEIGHT][WIDTH];
         }
 
-        for(int i = 0; i < HEIGHT; i++)
-        {
-            for(int j = 0; j < WIDTH; j++)
+        for(int i = 0; i < HEIGHT; i++) {
+            for (int j = 0; j < WIDTH; j++)
                 // Copy firstTiles's values to game's tiles array
-                if(tiles[i][j] == null)
+                if (tiles[i][j] == null)
                     tiles[i][j] = new Tile(firstTiles[i][j].getNumber());
                 else
                     tiles[i][j].setNumber(firstTiles[i][j].getNumber());
         }
+        atFirstStage = true;
     }
 
     private void setCommand(int slot, Command moveCommand) {
@@ -250,15 +259,23 @@ public class Game {
         }
     }
 
-    void onKeyPressed(Direction direction) {
+    synchronized void  onKeyPressed(Direction direction) {
         if (gameOver)
             return;
 
-        if(turnIndex > 0 && turnIndex < turns.size()){
+        // If this we change the very first move from history
+
+        if(turns.size()>0 && atFirstStage == true && direction != ((GameCommand)turns.get(0).command).getDirection()){
+            turnIndex = 0;
+            removeEnd(turns, turnIndex);
+        }
+
+
+        if(turnIndex > 0 && turnIndex <= turns.size()){
             removeEnd(turns, turnIndex);
             turnIndex = 0;
         }
-
+        atFirstStage = false;
         if (!computeMove(direction))
             return;
 

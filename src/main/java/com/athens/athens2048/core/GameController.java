@@ -13,12 +13,12 @@ public class GameController {
         game.reset();
     }
 
-    public void replayGame() {
-        game.resetTurnIndex();
+    public void backToFirstStage() {
+        game.backToFirstStage();
     }
 
-    public void replayStep() {
-        game.replay();
+    public void backToLastMove() {
+        game.backToLastMove();
     }
 
     public void undoStep() {

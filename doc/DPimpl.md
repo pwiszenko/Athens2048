@@ -40,7 +40,7 @@ Command pattern is replacing a huge switch() structure in our code. It alos allo
 every single move of the player and every single spawned number.
 
 Using this recording, we added the possibility to replay our play since the begining over and over.
-Pressing `r` restarts the scenario at the begining, pressing `e` steps through the scenario
+Pressing `r` rewind game to the beginning, pressing `e` jump to the most recent move
 
 We also used it to implement undo/redo feature.
 Pressing `u` will undo last move, pressing `y` will redo last undone move.
