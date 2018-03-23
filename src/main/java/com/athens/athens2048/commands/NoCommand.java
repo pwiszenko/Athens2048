@@ -7,8 +7,8 @@ import com.athens.athens2048.core.Game;
 
 public class NoCommand extends GameCommand implements Command {
 
-    public NoCommand(Board board, Game game){
-        initialize(board, game);
+    public NoCommand(Board board){
+        initialize(board);
     }
 
     public boolean execute(Board board, boolean updateScore){

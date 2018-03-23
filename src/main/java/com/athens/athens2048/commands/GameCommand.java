@@ -6,12 +6,10 @@ import com.athens.athens2048.core.Game;
 
 
 public abstract class GameCommand implements Command{
-    protected Game game;
     protected Board board;
 
-    public void initialize(Board board, Game game){
+    public void initialize(Board board){
         this.board = board;
-        this.game = game;
 
     }
 

@@ -6,16 +6,16 @@ import com.athens.athens2048.commands.*;
 public class CommandManager {
     private Command[] moveCommands;
 
-    public void initCommands(Board board, Game game) {
+    public void initCommands(Board board) {
         moveCommands = new Command[Direction.directionCount];
-        Command noCommand = new NoCommand(board, game);
+        Command noCommand = new NoCommand(board);
         for (int i = 0; i < Direction.directionCount; i++) {
             moveCommands[i] = noCommand;
         }
-        UpCommand upCommand = new UpCommand(board, game);
-        DownCommand downCommand = new DownCommand(board, game);
-        RightCommand rightCommand = new RightCommand(board, game);
-        LeftCommand leftCommand = new LeftCommand(board, game);
+        UpCommand upCommand = new UpCommand(board);
+        DownCommand downCommand = new DownCommand(board);
+        RightCommand rightCommand = new RightCommand(board);
+        LeftCommand leftCommand = new LeftCommand(board);
 
         setCommand(Direction.TOP.getValue(), upCommand);
         setCommand(Direction.RIGHT.getValue(), rightCommand);

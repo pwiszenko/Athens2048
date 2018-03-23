@@ -9,8 +9,8 @@ import static com.athens.athens2048.core.Direction.LEFT;
 
 public class LeftCommand extends GameCommand implements Command {
 
-    public LeftCommand(Board board, Game game){
-        initialize(board, game);
+    public LeftCommand(Board board){
+        initialize(board);
     }
 
     public boolean execute(Board board, boolean updateScore){

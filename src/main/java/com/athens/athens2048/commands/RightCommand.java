@@ -9,8 +9,8 @@ import static com.athens.athens2048.core.Direction.RIGHT;
 
 public class RightCommand  extends GameCommand implements Command {
 
-    public RightCommand(Board board, Game game){
-        initialize(board, game);
+    public RightCommand(Board board){
+        initialize(board);
     }
 
     public boolean execute(Board board, boolean updateScore){

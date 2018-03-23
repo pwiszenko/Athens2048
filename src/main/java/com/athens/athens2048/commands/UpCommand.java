@@ -9,8 +9,8 @@ import static com.athens.athens2048.core.Direction.TOP;
 
 public class UpCommand extends GameCommand implements Command {
 
-    public UpCommand(Board board, Game game){
-        initialize(board, game);
+    public UpCommand(Board board){
+        initialize(board);
     }
 
     public boolean execute(Board board, boolean updateScore){

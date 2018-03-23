@@ -29,7 +29,7 @@ public class Game implements ScoredCounter {
     Game() {
         board = new Board(this, 2);
         reset();
-        commandManager.initCommands(board, this);
+        commandManager.initCommands(board);
     }
 
     public void addGameObserver(GameObserver gameObserver) {

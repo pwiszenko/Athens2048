@@ -9,8 +9,8 @@ import static com.athens.athens2048.core.Direction.BOTTOM;
 
 public class DownCommand extends GameCommand implements Command {
 
-    public DownCommand(Board board, Game game){
-        initialize(board, game);
+    public DownCommand(Board board){
+        initialize(board);
     }
 
     public boolean execute(Board board, boolean updateScore){
