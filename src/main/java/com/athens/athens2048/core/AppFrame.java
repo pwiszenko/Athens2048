@@ -331,6 +331,7 @@ class AppFrame extends JFrame implements GameObserver {
      */
     public void gameOver(int bestScore) {
         max_score.setText(Integer.toString(bestScore));
+        JOptionPane.showMessageDialog(this, "Game over :(", "Game Alert", JOptionPane.PLAIN_MESSAGE);
     }
 
     /**
